@@ -64,4 +64,17 @@ public class PlayerController : MonoBehaviour {
 
         return raycastHit.collider != null;
     }
+
+    public void SavePlayer() {
+        SaveSystem.SavePlayer(this);
+	}
+
+    public void LoadPlaer() {
+        PlayerData data = SaveSystem.LoadPlayer();
+
+        Vector2 v2PlayerPosition;
+        v2PlayerPosition.x = data.afPlayerPositions[0];
+        v2PlayerPosition.y = data.afPlayerPositions[1];
+        transform.position = v2PlayerPosition;
+	}
 }

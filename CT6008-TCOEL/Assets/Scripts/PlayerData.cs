@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerData : MonoBehaviour
+[System.Serializable] // allows use to save into a file
+public class PlayerData
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public float[] afPlayerPositions; // float array that contains the position of our player
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public PlayerData(PlayerController playerController) {
+
+		afPlayerPositions = new float[2];
+		afPlayerPositions[0] = playerController.transform.position.x;
+		afPlayerPositions[1] = playerController.transform.position.y;
+	}
 }
