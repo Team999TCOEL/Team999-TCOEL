@@ -19,40 +19,32 @@ public class PlayerController : MonoBehaviour {
 
     private float fMoveSpeed = 8f; // defines how fast the players moves
 
-    private float fJumpHeight = 5f; // defines how high the player can jump
-
-    private float fVerticalVelocity; // float used to store the vertical velocity of the player when jumping
-    private float fGravity = 14f; // float that defines how fast the player will fall back to the ground
+    private Rigidbody2D playerRigidbody2D;
 
     private float fDistToGround; // used to track how far off the ground the player is and determine if they are grounded
 
-    BoxCollider2D boxCollider2D;
+    CapsuleCollider2D capsuleCollider2D;
 
     void Start() {
-        fDistToGround = GetComponent<BoxCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
-        boxCollider2D = GetComponent<BoxCollider2D>();
+        fDistToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
+        capsuleCollider2D = GetComponent<CapsuleCollider2D>();
+        playerRigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetKey(KeyCode.A)) {
-            transform.position += transform.right * -fMoveSpeed * Time.deltaTime;
-        }
 
-        if (Input.GetKey(KeyCode.D)) {
-            transform.position += transform.right * fMoveSpeed * Time.deltaTime;
-        }
+		if (IsGrounded()) {
+            Movement();
+		}
 
-        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space)) {
-            Vector2 v2JumpHeight = new Vector2(0, fJumpHeight * Time.deltaTime);
-            GetComponent<Rigidbody2D>().AddForce(Vector3.up * 250 * Time.deltaTime, ForceMode2D.Impulse);
-        }
+        Jumping();
     }
 
     // our ground check that sees if the player is more than 0.1f off the floor
     private bool IsGrounded() {
         float fExtraHeightTest = 0.1f;
-        RaycastHit2D raycastHit = Physics2D.Raycast(boxCollider2D.bounds.center, Vector2.down, fDistToGround + fExtraHeightTest, platformLayerMask);
+        RaycastHit2D raycastHit = Physics2D.Raycast(capsuleCollider2D.bounds.center, Vector2.down, fDistToGround + fExtraHeightTest, platformLayerMask);
         Color rayColor;
         if(raycastHit.collider != null) {
             rayColor = Color.green;
@@ -60,21 +52,45 @@ public class PlayerController : MonoBehaviour {
             rayColor = Color.red;
 		}
 
-        Debug.DrawRay(boxCollider2D.bounds.center, Vector2.down * (fDistToGround + fExtraHeightTest), rayColor);
+        Debug.DrawRay(capsuleCollider2D.bounds.center, Vector2.down * (fDistToGround + fExtraHeightTest), rayColor);
 
         return raycastHit.collider != null;
     }
 
+    private void Movement() {
+        if (Input.GetKey(KeyCode.A)) {
+			if (IsGrounded()) {
+                playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
+            } else {
+                float fMidAirControl = 1f;
+                playerRigidbody2D.velocity += new Vector2(-fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
+                playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
+			}           
+        } else if (Input.GetKey(KeyCode.D)) {
+            playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
+        } 
+    }
+
+
+    private void Jumping() {
+        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space)) {
+            float fJumpVelocity = 20f;
+            playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
+        }
+
+
+    }
+
     public void SavePlayer() {
-        SaveSystem.SavePlayer(this);
+        SaveSystem.SavePlayer(this); // saves the current settings and position of the player
 	}
 
     public void LoadPlaer() {
-        PlayerData data = SaveSystem.LoadPlayer();
+        PlayerData data = SaveSystem.LoadPlayer(); // loads the data of the last performed save 
 
-        Vector2 v2PlayerPosition;
-        v2PlayerPosition.x = data.afPlayerPositions[0];
+        Vector2 v2PlayerPosition; // create a vector to set the players position
+        v2PlayerPosition.x = data.afPlayerPositions[0]; 
         v2PlayerPosition.y = data.afPlayerPositions[1];
-        transform.position = v2PlayerPosition;
+        transform.position = v2PlayerPosition; // set the x and y of our player to that of the x and y in the save file
 	}
 }
