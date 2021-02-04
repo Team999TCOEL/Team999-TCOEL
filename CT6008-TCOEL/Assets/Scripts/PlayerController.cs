@@ -25,6 +25,9 @@ public class PlayerController : MonoBehaviour {
 
     CapsuleCollider2D capsuleCollider2D;
 
+    private float fallMultiplier = 2.5f;
+    private float lowJumpMultiplier = 2f;
+
     void Start() {
         fDistToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
         capsuleCollider2D = GetComponent<CapsuleCollider2D>();
@@ -33,11 +36,7 @@ public class PlayerController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
-		if (IsGrounded()) {
-            Movement();
-		}
-
+        Movement();
         Jumping();
     }
 
@@ -57,28 +56,34 @@ public class PlayerController : MonoBehaviour {
         return raycastHit.collider != null;
     }
 
-    private void Movement() {
+	private void Movement() {
+        float fMidAirControl = 8f;
         if (Input.GetKey(KeyCode.A)) {
 			if (IsGrounded()) {
                 playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
             } else {
-                float fMidAirControl = 1f;
                 playerRigidbody2D.velocity += new Vector2(-fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
                 playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
 			}           
         } else if (Input.GetKey(KeyCode.D)) {
-            playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
-        } 
+            if (IsGrounded()) {
+                playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
+            } else {
+                playerRigidbody2D.velocity += new Vector2(+fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
+                playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
+            }
+        } else {
+			if (IsGrounded()) {
+                playerRigidbody2D.velocity = new Vector2(0, playerRigidbody2D.velocity.y);
+			}
+		}
     }
 
-
-    private void Jumping() {
+	private void Jumping() {
         if (IsGrounded() && Input.GetKeyDown(KeyCode.Space)) {
             float fJumpVelocity = 20f;
             playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
         }
-
-
     }
 
     public void SavePlayer() {

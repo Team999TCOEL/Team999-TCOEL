@@ -1,0 +1,302 @@
+fileFormatVersion: 2
+guid: 1097c74ea1a92a043bfed54400a31a6e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1532178315861748550
+    second: BasicCharacter-Sheet_0
+  - first:
+      213: -5876744493704065530
+    second: BasicCharacter-Sheet_1
+  - first:
+      213: -3397635537021751701
+    second: BasicCharacter-Sheet_2
+  - first:
+      213: 2806141848471004626
+    second: BasicCharacter-Sheet_3
+  - first:
+      213: 3314665991176057167
+    second: BasicCharacter-Sheet_4
+  - first:
+      213: -3559072179427908253
+    second: BasicCharacter-Sheet_5
+  - first:
+      213: -7764326316503033364
+    second: BasicCharacter-Sheet_6
+  - first:
+      213: 5371380310111576878
+    second: BasicCharacter-Sheet_7
+  - first:
+      213: -8334092070699775815
+    second: BasicCharacter-Sheet_8
+  - first:
+      213: 7271420001470410010
+    second: BasicCharacter-Sheet_9
+  - first:
+      213: 2465476653214739212
+    second: BasicCharacter-Sheet_10
+  - first:
+      213: -1119114392819853015
+    second: BasicCharacter-Sheet_11
+  - first:
+      213: 4585384655376893663
+    second: BasicCharacter-Sheet_12
+  - first:
+      213: 3154498883578876266
+    second: BasicCharacter-Sheet_13
+  - first:
+      213: -1318805720649236055
+    second: BasicCharacter-Sheet_14
+  - first:
+      213: 3640811404663429135
+    second: BasicCharacter-Sheet_15
+  - first:
+      213: 7448336291066646935
+    second: BasicCharacter-Sheet_16
+  - first:
+      213: 4206645371868359079
+    second: BasicCharacter-Sheet_17
+  - first:
+      213: -8925178024036657726
+    second: BasicCharacter-Sheet_18
+  - first:
+      213: 2445451740391076081
+    second: BasicCharacter-Sheet_19
+  - first:
+      213: -3211332640993640824
+    second: BasicCharacter-Sheet_20
+  - first:
+      213: 2033497704313555188
+    second: BasicCharacter-Sheet_21
+  - first:
+      213: 2480804317351609050
+    second: BasicCharacter-Sheet_22
+  - first:
+      213: 8638940347680481852
+    second: BasicCharacter-Sheet_23
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BasicCharacter-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64bee797f04634510800000000000000
+      internalID: 1532178315861748550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BasicCharacter-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60e4901f40c917ea0800000000000000
+      internalID: -5876744493704065530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BasicCharacter-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6e23930b7c29d0d0800000000000000
+      internalID: -3397635537021751701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BasicCharacter-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d5e873c42b61f620800000000000000
+      internalID: 2806141848471004626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BasicCharacter-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f41fd19382f000e20800000000000000
+      internalID: 3314665991176057167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BasicCharacter-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3656937a5b2ab9ec0800000000000000
+      internalID: -3559072179427908253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
