@@ -11,5 +11,5 @@ using UnityEngine;
 
 public class BlackBoard : MonoBehaviour
 {
-	public bool bPlayerSpotted = false;
+	public int iPlayerHealth;
 }

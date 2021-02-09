@@ -25,13 +25,16 @@ public class PlayerController : MonoBehaviour {
 
     CapsuleCollider2D capsuleCollider2D;
 
-    private float fallMultiplier = 2.5f;
-    private float lowJumpMultiplier = 2f;
+    public int iPlayerHealth = 3;
+
+    public BlackBoard blackboard;
 
     void Start() {
         fDistToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
         capsuleCollider2D = GetComponent<CapsuleCollider2D>();
         playerRigidbody2D = GetComponent<Rigidbody2D>();
+
+        blackboard.iPlayerHealth = 3;
     }
 
     // Update is called once per frame
