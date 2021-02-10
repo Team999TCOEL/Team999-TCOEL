@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour {
         SaveSystem.SavePlayer(this); // saves the current settings and position of the player
 	}
 
-    public void LoadPlaer() {
+    public void LoadPlayer() {
         PlayerData data = SaveSystem.LoadPlayer(); // loads the data of the last performed save 
 
         Vector2 v2PlayerPosition; // create a vector to set the players position

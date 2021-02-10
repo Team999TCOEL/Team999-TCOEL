@@ -21,8 +21,6 @@ public class TriangleEnemy : MonoBehaviour
 
 	private bool bPlayerSpotted;
 
-	private bool bAttackPlayer;
-
 	private float fRaycastDistance = 5f;
 
 	public Transform tGroundDetection;
@@ -35,12 +33,6 @@ public class TriangleEnemy : MonoBehaviour
 
 	public BlackBoard blackboard;
 
-	void Start()
-    {
-        
-    }
-
-	// Update is called once per frame
 	void Update() {
 
 		if (LineOfSightCheck() == true) {
@@ -48,7 +40,6 @@ public class TriangleEnemy : MonoBehaviour
 		} else {
 			Patrol();
 		}
-
 	}
 
 	private void Patrol() {
@@ -101,10 +92,9 @@ public class TriangleEnemy : MonoBehaviour
 	}
 
 	private void Attack() {
-		bAttackPlayer = true;
 		float fRayCastRightDistance = 10f;
 		float fRayCastLeftDistance = 10f;
-		float fEnemyChaseSpeed = 4f;
+		float fEnemyChaseSpeed = 6f;
 
 		Vector2 v2PlayerPosition = new Vector2(tPlayer.position.x, tPlayer.position.y);
 		Vector2 v2EnemyPosition = new Vector2(transform.position.x, transform.position.y);
@@ -121,21 +111,18 @@ public class TriangleEnemy : MonoBehaviour
 
 		RaycastHit2D rayCastRight = Physics2D.Raycast(transform.position, Vector2.right, fRayCastRightDistance, playerLayerMask);
 		RaycastHit2D rayCastLeft = Physics2D.Raycast(transform.position, Vector2.right, fRayCastLeftDistance, playerLayerMask);
-
-		if (rayCastRight.collider == true || rayCastLeft.collider == true) {
-
-
-			if (fDistanceBtwnEnemyAndPlayer <= 1.5f) {
-
-			}
-		} else {
-			bAttackPlayer = false;
-		}
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
 		if (collision.gameObject.tag == "Player") {
 			blackboard.iPlayerHealth -= 1;
+			tPlayer.gameObject.GetComponent<Renderer>().material.color = Color.red;
+		}
+	}
+
+	private void OnCollisionExit2D(Collision2D collision) {
+		if (collision.gameObject.tag == "Player") {
+			tPlayer.gameObject.GetComponent<Renderer>().material.color = Color.white;
 		}
 	}
 }

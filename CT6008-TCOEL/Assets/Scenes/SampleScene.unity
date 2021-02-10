@@ -1145,7 +1145,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1191010076}
+      - m_Target: {fileID: 1651654732}
         m_MethodName: SavePlayer
         m_Mode: 1
         m_Arguments:
@@ -1870,12 +1870,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tGroundDetection: {fileID: 1163403174}
+  tPlayer: {fileID: 1651654731}
   platformLayerMask:
     serializedVersion: 2
     m_Bits: 256
   playerLayerMask:
     serializedVersion: 2
     m_Bits: 512
+  blackboard: {fileID: 2001861193}
 --- !u!50 &1106133259
 Rigidbody2D:
   serializedVersion: 4
@@ -2057,6 +2059,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   iPlayerHealth: 3
+  blackboard: {fileID: 0}
 --- !u!50 &1191010077
 Rigidbody2D:
   serializedVersion: 4
@@ -2847,6 +2850,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   iPlayerHealth: 3
+  blackboard: {fileID: 2001861193}
 --- !u!1 &1889580430
 GameObject:
   m_ObjectHideFlags: 0
@@ -2929,8 +2933,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1191010076}
-        m_MethodName: LoadPlaer
+      - m_Target: {fileID: 1651654732}
+        m_MethodName: LoadPlayer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3222,7 +3226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e46c26cb81f2744a84590015073e23e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bPlayerSpotted: 0
+  iPlayerHealth: 0
 --- !u!4 &2001861194
 Transform:
   m_ObjectHideFlags: 0
