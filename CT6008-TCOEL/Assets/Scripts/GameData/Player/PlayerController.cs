@@ -25,8 +25,6 @@ public class PlayerController : MonoBehaviour {
 
     CapsuleCollider2D capsuleCollider2D;
 
-    public int iPlayerHealth = 3;
-
     public BlackBoard blackboard;
 
     void Start() {
@@ -34,7 +32,7 @@ public class PlayerController : MonoBehaviour {
         capsuleCollider2D = GetComponent<CapsuleCollider2D>();
         playerRigidbody2D = GetComponent<Rigidbody2D>();
 
-        blackboard.iPlayerHealth = 3;
+        blackboard.iPlayerHealth = 5;
     }
 
     // Update is called once per frame
