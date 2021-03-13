@@ -3,9 +3,9 @@
 // Author:               <Morgan Ellis>
 // Date Created:         <09/02/2021>
 // Brief:                <File responsible for the movements of the player such as jumping>
-// Last Edited By:       <>
-// Last Edited Date:     <>
-// Last Edit Brief:      <>
+// Last Edited By:       <Morgan Ellis>
+// Last Edited Date:     <13/03/2021>
+// Last Edit Brief:      <Updating enemy with sprites and linking the animator to the animations>
 ////////////////////////////////////////////////////////////
 
 using System.Collections;
@@ -15,6 +15,7 @@ using UnityEngine;
 public class TriangleEnemy : MonoBehaviour
 {
 	private float fSpeedOfEnemy = 2f;
+
 	private float fDistance = 1f;
 
 	private bool bMoveRight = true;
@@ -33,11 +34,16 @@ public class TriangleEnemy : MonoBehaviour
 
 	public BlackBoard blackboard;
 
+	public Animator LittleRobotAnimator;
+
+
 	void Update() {
 
 		if (LineOfSightCheck() == true) {
+			LittleRobotAnimator.SetBool("AttackPlayer", true);
 			Attack();
 		} else {
+			LittleRobotAnimator.SetBool("AttackPlayer", false);
 			Patrol();
 		}
 	}
@@ -52,7 +58,7 @@ public class TriangleEnemy : MonoBehaviour
 			rayColor = Color.red;
 		}
 
-		transform.Translate(Vector2.right * fSpeedOfEnemy * Time.deltaTime);
+		transform.Translate(Vector2.left * fSpeedOfEnemy * Time.deltaTime);
 
 		Debug.DrawRay(tGroundDetection.position, Vector2.down, rayColor);
 
@@ -71,7 +77,7 @@ public class TriangleEnemy : MonoBehaviour
 
 	private bool LineOfSightCheck() {
 		if (transform.rotation.y == 0) {
-			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.right, fRaycastDistance, playerLayerMask);
+			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.left, fRaycastDistance, playerLayerMask);
 
 			if (rayCastInfo.collider == true) {
 				bPlayerSpotted = true;
@@ -79,7 +85,7 @@ public class TriangleEnemy : MonoBehaviour
 				bPlayerSpotted = false;
 			}
 		} else {
-			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.left, fRaycastDistance, playerLayerMask);
+			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.right, fRaycastDistance, playerLayerMask);
 
 			if (rayCastInfo.collider == true) {
 				bPlayerSpotted = true;
