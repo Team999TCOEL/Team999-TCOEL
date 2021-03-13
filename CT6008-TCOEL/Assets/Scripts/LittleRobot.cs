@@ -5,14 +5,14 @@
 // Brief:                <File responsible for the movements of the player such as jumping>
 // Last Edited By:       <Morgan Ellis>
 // Last Edited Date:     <13/03/2021>
-// Last Edit Brief:      <Updating enemy with sprites and linking the animator to the animations>
+// Last Edit Brief:      <Updting enemy with sprites and linking the animator to the animations>
 ////////////////////////////////////////////////////////////
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TriangleEnemy : MonoBehaviour
+public class LittleRobot : MonoBehaviour
 {
 	private float fSpeedOfEnemy = 2f;
 
