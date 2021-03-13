@@ -29,8 +29,8 @@ public class PlayerController : MonoBehaviour {
 
     public Camera mainCamera;
 
-    private float fCameraMaxLookHeight = 5f;
-    private float fCameraMinLookHeight = -5f;
+    private float fCameraMaxLookHeight;
+    private float fCameraMinLookHeight;
 
     private bool bDashIsReady;
 
@@ -38,14 +38,7 @@ public class PlayerController : MonoBehaviour {
 
     private bool bCanPlayerMove;
 
-    #region // Dash Variables
-
-    private float fDashSpeed = 10f;
-    private float fDashTime;
-    private float fStartDashTime = 0.1f;
-    private int iPlayerDirection;
-
-	#endregion
+    public Animator playerAnimator;
 
 	void Start() {
         fDistToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
@@ -54,7 +47,6 @@ public class PlayerController : MonoBehaviour {
 
         blackboard.iPlayerHealth = 5;
 
-        fDashTime = fStartDashTime;
         bDashIsReady = true;
         bCanPlayerMove = true;
     }
@@ -68,6 +60,9 @@ public class PlayerController : MonoBehaviour {
             MoveCamera();
               PlayerDash();
         }
+
+        fCameraMaxLookHeight = transform.position.y + 5;
+        fCameraMinLookHeight = transform.position.y - 5;
 
     }
 
@@ -92,7 +87,8 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKey(KeyCode.A) && bCanPlayerMove == true) {
             bFacingRight = false;
             if (bFacingRight == false) {
-                transform.eulerAngles = new Vector3(0, 0, 0);
+                playerAnimator.SetBool("bFacingRight", bFacingRight);
+                //transform.eulerAngles = new Vector3(0, 0, 0);
             }
             if (IsGrounded()) {
                 playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
@@ -104,7 +100,8 @@ public class PlayerController : MonoBehaviour {
             bFacingRight = true;
 
             if(bFacingRight == true) {
-                transform.eulerAngles = new Vector3(0, -180, 0);
+                playerAnimator.SetBool("bFacingRight", bFacingRight);
+                //transform.eulerAngles = new Vector3(0, -180, 0);
             }
             if (IsGrounded()) {
                 playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
@@ -127,14 +124,21 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void MoveCamera() {
-        if (Input.GetKey(KeyCode.UpArrow) && mainCamera.transform.position.y < fCameraMaxLookHeight) {
+        Vector3 velocity = Vector3.up;
+        if (Input.GetKeyDown(KeyCode.UpArrow) && mainCamera.transform.position.y < fCameraMaxLookHeight) {
+            bCanPlayerMove = false;
             Vector3 v3TargetPos = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y + 5f, mainCamera.transform.position.z);
-            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, 1);
-        } 
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, transform.position.y + 5);
+        } else if (Input.GetKeyUp(KeyCode.UpArrow)) {
+            bCanPlayerMove = true;
+		}
         
-        if (Input.GetKey(KeyCode.DownArrow) && mainCamera.transform.position.y > fCameraMinLookHeight) {
+        if (Input.GetKeyDown(KeyCode.DownArrow) && mainCamera.transform.position.y > fCameraMinLookHeight) {
+            bCanPlayerMove = false;
             Vector3 v3TargetPos = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y - 5f, mainCamera.transform.position.z);
-            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, 1);
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, transform.position.y + 5);
+		} else if (Input.GetKeyUp(KeyCode.DownArrow)) {
+            bCanPlayerMove = true;
         }
     }
 
@@ -179,4 +183,10 @@ public class PlayerController : MonoBehaviour {
         v2PlayerPosition.y = data.afPlayerPositions[1];
         transform.position = v2PlayerPosition; // set the x and y of our player to that of the x and y in the save file
 	}
+
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Enemy") {
+
+        }
+    }
 }

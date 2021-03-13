@@ -63,8 +63,6 @@ public class LittleRobot : MonoBehaviour
 		Debug.DrawRay(tGroundDetection.position, Vector2.down, rayColor);
 
 		if (groundInfo.collider == false) {
-
-
 			if (bMoveRight == true) {
 				transform.eulerAngles = new Vector3(0, -180, 0);
 				bMoveRight = false;
@@ -86,7 +84,6 @@ public class LittleRobot : MonoBehaviour
 			}
 		} else {
 			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.right, fRaycastDistance, playerLayerMask);
-
 			if (rayCastInfo.collider == true) {
 				bPlayerSpotted = true;
 			} else {
@@ -98,8 +95,6 @@ public class LittleRobot : MonoBehaviour
 	}
 
 	private void Attack() {
-		float fRayCastRightDistance = 10f;
-		float fRayCastLeftDistance = 10f;
 		float fEnemyChaseSpeed = 6f;
 
 		Vector2 v2PlayerPosition = new Vector2(tPlayer.position.x, tPlayer.position.y);
@@ -114,9 +109,6 @@ public class LittleRobot : MonoBehaviour
 		if (fDistanceBtwnEnemyAndPlayer < 2f) {
 			GetComponent<Renderer>().material.color = Color.red;
 		}
-
-		RaycastHit2D rayCastRight = Physics2D.Raycast(transform.position, Vector2.right, fRayCastRightDistance, playerLayerMask);
-		RaycastHit2D rayCastLeft = Physics2D.Raycast(transform.position, Vector2.right, fRayCastLeftDistance, playerLayerMask);
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
