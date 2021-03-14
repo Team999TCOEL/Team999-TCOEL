@@ -40,12 +40,20 @@ public class PlayerController : MonoBehaviour {
 
     public Animator playerAnimator;
 
+    public PlayerUI playerUI;
+
+	private void Awake() {
+        blackboard.iPlayerHealth = 5;
+        blackboard.iMaxStamina = 100;
+        blackboard.iCurrentStamina = 100;
+    }
+
 	void Start() {
         fDistToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
         capsuleCollider2D = GetComponent<CapsuleCollider2D>();
         playerRigidbody2D = GetComponent<Rigidbody2D>();
 
-        blackboard.iPlayerHealth = 5;
+
 
         bDashIsReady = true;
         bCanPlayerMove = true;
@@ -117,7 +125,8 @@ public class PlayerController : MonoBehaviour {
     }
 
 	private void Jumping() {
-        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space)) {
+        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && blackboard.iCurrentStamina >= 10) {
+            playerUI.UseStamina(10);
             float fJumpVelocity = 18f;
             playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
         }
@@ -144,13 +153,15 @@ public class PlayerController : MonoBehaviour {
 
     private void PlayerDash() {
 		if (bDashIsReady) {
-            if (Input.GetKeyDown(KeyCode.C) && bFacingRight == true) {
+            if (Input.GetKeyDown(KeyCode.C) && bFacingRight == true && blackboard.iCurrentStamina >= 15) {
+                playerUI.UseStamina(15);
                 playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x + 1.5f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
                 bCanPlayerMove = false;
                 StartCoroutine("WaitForDash");
                 StartCoroutine("WaitForPlayerMoveAfterDash");
-            } else if(Input.GetKeyDown(KeyCode.C) && bFacingRight == false) {
+            } else if(Input.GetKeyDown(KeyCode.C) && bFacingRight == false && blackboard.iCurrentStamina >= 15) {
+                playerUI.UseStamina(15);
                 playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x - 1.5f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
                 bCanPlayerMove = false;

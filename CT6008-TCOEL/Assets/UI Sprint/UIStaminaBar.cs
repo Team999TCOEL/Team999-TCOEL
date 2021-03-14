@@ -3,9 +3,9 @@
 // Author:               <Jack Peedle>
 // Date Created:         <25/02/2021>
 // Brief:                <Stamina bar for the player to attack and gain health with>
-// Last Edited By:       <Jack Peedle>
-// Last Edited Date:     <25/02/2021>
-// Last Edit Brief:      <Setting up a working stamina bar>
+// Last Edited By:       <Morgan Ellis>
+// Last Edited Date:     <14/03/2021>
+// Last Edit Brief:      <Merging the stamia bar into the game>
 ////////////////////////////////////////////////////////////
 ///
 using System.Collections;
@@ -41,6 +41,12 @@ public class UIStaminaBar : MonoBehaviour
 
         // stamina value = max stamina
         staminaBar.value = iMaxStamina;
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            UseStamina(10);
+        }
     }
 
     // Use stamina
@@ -98,11 +104,4 @@ public class UIStaminaBar : MonoBehaviour
 }
 
 
-// Player Code to make stamina bar work
-/*
- * void Update (){
- *  if (Input.GetKeyDown(KeyCode.Space))
- *  StaminaBar.instance.UseStamina(10);
- *  }
- * 
-*/      
+       
