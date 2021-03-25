@@ -13,7 +13,7 @@ public class ParallaxScrolling : MonoBehaviour
         transform.Translate(Vector2.right * speed * Time.deltaTime); // move the background left towards the players give a paralax effect
 
         // if the background meets the end position, place it at the start to give the impresion of a seemless moving bcakground
-        if (transform.position.x >= endX) {
+        if (transform.position.x <= endX) {
             Vector2 pos = new Vector2(startX, transform.position.y);
             transform.position = pos;
         }

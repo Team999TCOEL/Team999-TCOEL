@@ -24,6 +24,8 @@ public class PlayerUI : MonoBehaviour
     // regen cororutine
     private Coroutine regen;
 
+    public Text fuelText;
+
     void Start() {
         // Current stamina = max stamina
         //blackBoard.iCurrentStamina = blackBoard.iMaxStamina;
@@ -59,6 +61,8 @@ public class PlayerUI : MonoBehaviour
                 hearts[i].enabled = false;
             }
         }
+
+        fuelText.text = blackBoard.iFuelCount.ToString();
     }
 
     public void UseStamina(int iAmount) {

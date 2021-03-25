@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour {
     private float fDistToGround; // used to track how far off the ground the player is and determine if they are grounded
 
     CapsuleCollider2D capsuleCollider2D;
+    public EdgeCollider2D swordCollider;
 
     public BlackBoard blackboard;
 
@@ -42,10 +43,15 @@ public class PlayerController : MonoBehaviour {
 
     public PlayerUI playerUI;
 
+    public Canvas playerSaveCanvas;
+
+    public int iFuelAmmount;
+
 	private void Awake() {
         blackboard.iPlayerHealth = 5;
         blackboard.iMaxStamina = 100;
         blackboard.iCurrentStamina = 100;
+        playerSaveCanvas.gameObject.SetActive(false);
     }
 
 	void Start() {
@@ -66,11 +72,14 @@ public class PlayerController : MonoBehaviour {
             Movement();
             Jumping();
             MoveCamera();
-              PlayerDash();
+            PlayerDash();
+            Attack();
         }
 
         fCameraMaxLookHeight = transform.position.y + 5;
         fCameraMinLookHeight = transform.position.y - 5;
+
+        iFuelAmmount = blackboard.iFuelCount;
 
     }
 
@@ -127,7 +136,7 @@ public class PlayerController : MonoBehaviour {
 	private void Jumping() {
         if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && blackboard.iCurrentStamina >= 10) {
             playerUI.UseStamina(10);
-            float fJumpVelocity = 18f;
+            float fJumpVelocity = 14f;
             playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
         }
     }
@@ -173,13 +182,29 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    private void Attack() {
+		if (Input.GetKey(KeyCode.Mouse1)) {
+            swordCollider.enabled = true;
+            playerAnimator.SetBool("bFacingRight", bFacingRight);
+            playerAnimator.SetBool("bAttacking", true);
+            StartCoroutine("WaitForAttack");
+        }
+	}
+
     public IEnumerator WaitForPlayerMoveAfterDash() {
         yield return new WaitForSeconds(0.8f);
         bCanPlayerMove = true;
     }
+
     public IEnumerator WaitForDash() {
         yield return new WaitForSeconds(1.5f);
         bDashIsReady = true;
+    }
+
+    public IEnumerator WaitForAttack() {
+        yield return new WaitForSeconds(1.5f);
+        swordCollider.enabled = false;
+        playerAnimator.SetBool("bAttacking", false);
     }
 
     public void SavePlayer() {
@@ -193,11 +218,25 @@ public class PlayerController : MonoBehaviour {
         v2PlayerPosition.x = data.afPlayerPositions[0]; 
         v2PlayerPosition.y = data.afPlayerPositions[1];
         transform.position = v2PlayerPosition; // set the x and y of our player to that of the x and y in the save file
+        blackboard.iFuelCount = data.iPlayerFuelAmmount;
 	}
 
     private void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject.tag == "Enemy") {
+        if (collision.gameObject.tag == "Fuel") {
+            blackboard.iFuelCount = blackboard.iFuelCount + 10;
+            Destroy(collision.gameObject);
+        } 
+    }
 
+	private void OnTriggerEnter2D(Collider2D collision) {
+		if(collision.gameObject.tag == "Save") {
+            playerSaveCanvas.gameObject.SetActive(true);
+		}
+	}
+
+	private void OnTriggerExit2D(Collider2D collision) {
+        if (collision.gameObject.tag == "Save") {
+            playerSaveCanvas.gameObject.SetActive(false);
         }
     }
 }
