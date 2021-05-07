@@ -26,36 +26,42 @@ public class PlayerUI : MonoBehaviour
 
     public Text fuelText;
 
+    public Text healCount;
+
     void Start() {
         // Current stamina = max stamina
         //blackBoard.iCurrentStamina = blackBoard.iMaxStamina;
 
         // stamina bars max value = max stamina
-        staminaBar.maxValue = blackBoard.iMaxStamina;
+        staminaBar.maxValue = blackBoard.fMaxStamina;
 
         // stamina value = max stamina
-        staminaBar.value = blackBoard.iMaxStamina;
+        staminaBar.value = blackBoard.fMaxStamina;
+
+        healCount.text = blackBoard.iHealCount.ToString();
     }
 
     void Update() {
 
+
+        healCount.text = blackBoard.iHealCount.ToString();
         // If health is more than the number of hearts then set health to number of hearts
-        if (blackBoard.iPlayerHealth > iNumOfHearts) {
-            blackBoard.iPlayerHealth = iNumOfHearts;
+        if (blackBoard.fPlayerHealth > blackBoard.fPlayerMaxHealth) {
+            blackBoard.fPlayerHealth = blackBoard.fPlayerMaxHealth;
         }
 
         // If i is less than hearts in heart array
         for (int i = 0; i < hearts.Length; i++) {
 
             // if i is less than health, set heart to full heart sprite
-            if (i < blackBoard.iPlayerHealth) {
+            if (i < blackBoard.fPlayerHealth) {
                 hearts[i].sprite = sFullHeart;
             } else { // if i is more than health, set heart to broken heart sprite
                 hearts[i].sprite = sBrokenHeart;
             }
 
             // Check if i is smaller, if true set hearts to true
-            if (i < iNumOfHearts) {
+            if (i < blackBoard.fPlayerMaxHealth) {
                 hearts[i].enabled = true;
             } else { // Check if i is bigger, hide hearts
                 hearts[i].enabled = false;
@@ -68,13 +74,13 @@ public class PlayerUI : MonoBehaviour
     public void UseStamina(int iAmount) {
 
         // If current stamina - amount is more than or = 0, we have stamina
-        if (blackBoard.iCurrentStamina - iAmount >= 0) {
+        if (blackBoard.fCurrentStamina - iAmount >= 0) {
 
             // current stamina - amount
-            blackBoard.iCurrentStamina -= iAmount;
+            blackBoard.fCurrentStamina -= iAmount;
 
             // stamina bar value = current stamina
-            staminaBar.value = blackBoard.iCurrentStamina;
+            staminaBar.value = blackBoard.fCurrentStamina;
 
             // If already regenerating stamina
             if (regen != null) {
@@ -101,13 +107,13 @@ public class PlayerUI : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         // While current stamina is less than max stamina
-        while (blackBoard.iCurrentStamina < blackBoard.iMaxStamina) {
+        while (blackBoard.fCurrentStamina < blackBoard.fMaxStamina) {
 
             // current stamina + max stamina divided by 100
-            blackBoard.iCurrentStamina += blackBoard.iMaxStamina / 100;
+            blackBoard.fCurrentStamina += blackBoard.fMaxStamina / 100;
 
             // stamina bar value = current stamina
-            staminaBar.value = blackBoard.iCurrentStamina;
+            staminaBar.value = blackBoard.fCurrentStamina;
 
             Debug.Log(staminaBar.value);
 

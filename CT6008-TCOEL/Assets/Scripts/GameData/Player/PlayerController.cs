@@ -4,86 +4,156 @@
 // Date Created:         <30/01/2021>
 // Brief:                <File responsible for the movements of the player such as jumping>
 // Last Edited By:       <Morgan Ellis
-// Last Edited Date:     <13/03/2021>
-// Last Edit Brief:      <Character is now able to dash and some other minor QOL changes have been made>
+// Last Edited Date:     <06/04/2021>
+// Last Edit Brief:      <The character is now able to run and heal>
 ////////////////////////////////////////////////////////////
 
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
-    [SerializeField] private LayerMask platformLayerMask;
+    [SerializeField] private LayerMask platformLayerMask; // layermask so the player can detect the ground
 
     private float fMoveSpeed = 6f; // defines how fast the players moves
 
-    private Rigidbody2D playerRigidbody2D;
+    private Rigidbody2D playerRigidbody2D; // rigidbody of our player
 
     private float fDistToGround; // used to track how far off the ground the player is and determine if they are grounded
 
-    CapsuleCollider2D capsuleCollider2D;
-    public EdgeCollider2D swordCollider;
+    CapsuleCollider2D capsuleCollider2D; // capsule collider for the player
 
-    public BlackBoard blackboard;
+    public BlackBoard blackboard; // reference to our blackboard which stores world data such as the players health so it can be accessed by other scripts
 
-    public Camera mainCamera;
+    public Camera mainCamera; // reference to the camera which will follow the player
 
-    private float fCameraMaxLookHeight;
-    private float fCameraMinLookHeight;
+    private float fCameraMaxLookHeight; // float used to control the max look hight of the players camera
+    private float fCameraMinLookHeight; // float used to control the min look hight of the players camera
 
-    private bool bDashIsReady;
+    private bool bDashIsReady; // bool that is used to allow the player to dash
 
-    private bool bFacingRight;
+    public bool bFacingRight; // bool that is used to know which way the player is facing
 
-    private bool bCanPlayerMove;
+    private bool bCanPlayerMove; // allows the player to move, is false just after the player dashes and other instances
 
-    public Animator playerAnimator;
+    public Animator playerAnimator; // reference to the players animator so we can control the animations
 
-    public PlayerUI playerUI;
+    public PlayerUI playerUI; // reference to the players UI script 
 
-    public Canvas playerSaveCanvas;
+    public Canvas playerSaveCanvas; // reference to the players test save canvas
 
-    public int iFuelAmmount;
+    public int iFuelAmmount; // a variable used to store the ammount of fuel the player has
 
-	private void Awake() {
-        blackboard.iPlayerHealth = 5;
-        blackboard.iMaxStamina = 100;
-        blackboard.iCurrentStamina = 100;
-        playerSaveCanvas.gameObject.SetActive(false);
+    public float fPlayerMaxHealth; // a variable used to store the maximum health of the player
+
+    public int iHealAmmount; // a varaible used to store the ammount of times the player can heal
+
+    public float fMaxStamina; // a varaible used to store the highest ammount of stamina the player can have
+
+    public GameObject go_WeaponManger;
+
+    public WeaponManager weaponManager;
+
+    private GameObject go_CurrentWeapon;
+
+    public Inventory inventory;
+
+    [SerializeField] private UI_Inventory uiInventory;
+
+    [SerializeField] private GameObject go_UI_Inventory;
+
+    public List<Items> itemList;
+
+    public GameObject go_SMGPrefab;
+
+    public bool bResetWorld;
+
+    public GameObject go_FuelPrefab;
+
+    public Image FadeToBlackImage;
+
+	private void Awake() {        
+        playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
+        LoadNewPlayer();
+        //LoadPlayer();
     }
 
 	void Start() {
+        bResetWorld = false;
         fDistToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y; // gets the distance between the box collider and the ground
-        capsuleCollider2D = GetComponent<CapsuleCollider2D>();
-        playerRigidbody2D = GetComponent<Rigidbody2D>();
+        capsuleCollider2D = GetComponent<CapsuleCollider2D>(); // get the capsule collider componenet on our player
+        playerRigidbody2D = GetComponent<Rigidbody2D>(); // get the rigidbody componenet on our player
+        
+        iHealAmmount = blackboard.iHealCount; // set the ammount of times the player can heal
+        fMaxStamina = blackboard.fMaxStamina; // set the maximum ammount of stamina of the player
+        blackboard.fCurrentStamina = fMaxStamina; // set the current stamina of the player to the highest ammount of stamina
 
+        bDashIsReady = true; // allow the player to dash
+        bCanPlayerMove = true; // allow the player to move
 
+        inventory = new Inventory(UseItem);
 
-        bDashIsReady = true;
-        bCanPlayerMove = true;
+        foreach (Items item in itemList) {
+            Debug.Log(item);
+            inventory.AddItem(item);
+        }
+        uiInventory.SetPlayer(this);
+        uiInventory.SetInventory(inventory);
+
+        go_UI_Inventory.SetActive(true);
     }
+
+    private void UseItem(Items item) {
+		switch (item.itemType) {
+            case Items.ItemType.SMG:
+                weaponManager.PickUpWeapon(go_SMGPrefab);
+                weaponManager.EquipWeapon(go_SMGPrefab);
+                go_CurrentWeapon = go_SMGPrefab;
+                //GameObject currentEquippedWeapon = go_SMGPrefab;
+                //go_WeaponManger.GetComponent<WeaponManager>().go_CurrentWeapon = currentEquippedWeapon;     
+                break;
+            case Items.ItemType.Health:
+                PlayerHealing();
+                inventory.RemoveItem(new Items { itemType = Items.ItemType.Health, iItemAmmount = 1 });
+                break;
+		}
+	}
+
+    public void DropWeapon() {
+        weaponManager.DropWeapon(go_CurrentWeapon);
+	}
 
     void Update() {
-        if(blackboard.iPlayerHealth <= 0) {
+
+        itemList = inventory.GetItemList();
+        if(blackboard.fPlayerHealth <= 0) { // if the players health is 0 then the game is over
 
 		} else {
-            Movement();
-            Jumping();
-            MoveCamera();
-            PlayerDash();
-            Attack();
+            Movement(); // call the movement function
+            Jumping(); // call the jumping function
+            MoveCamera(); // call the movecamera function
+            PlayerDash(); // call the playerdash function
+            Attack(); // call the attack function
         }
 
-        fCameraMaxLookHeight = transform.position.y + 5;
-        fCameraMinLookHeight = transform.position.y - 5;
+		if (Input.GetKeyDown(KeyCode.G)) {
+            blackboard.fPlayerMaxHealth += 1;
+		}
 
-        iFuelAmmount = blackboard.iFuelCount;
+        fCameraMaxLookHeight = transform.position.y + 2; // set how high the camera can look
+        fCameraMinLookHeight = transform.position.y - 2; // set how low the camera can look
 
+        iFuelAmmount = blackboard.iFuelCount; // constantly update the ammount of fuel the player has
+        fPlayerMaxHealth = blackboard.fPlayerMaxHealth;
     }
 
-    // our ground check that sees if the player is more than 0.1f off the floor
+    /// <summary>
+    /// our ground check that sees if the player is more than 0.1f off the floor
+    /// </summary>
+    /// <returns> returns false if the player is more the 0.1f off the floor </returns>
     private bool IsGrounded() {
         float fExtraHeightTest = 0.1f;
         RaycastHit2D raycastHit = Physics2D.Raycast(capsuleCollider2D.bounds.center, Vector2.down, fDistToGround + fExtraHeightTest, platformLayerMask);
@@ -99,17 +169,23 @@ public class PlayerController : MonoBehaviour {
         return raycastHit.collider != null;
     }
 
+    /// <summary>
+    /// Allows the player to move left and right, also allows for in air control by using the above ground check function
+    /// </summary>
 	private void Movement() {
         float fMidAirControl = 8f;
         if (Input.GetKey(KeyCode.A) && bCanPlayerMove == true) {
             bFacingRight = false;
             if (bFacingRight == false) {
-                playerAnimator.SetBool("bFacingRight", bFacingRight);
-                //transform.eulerAngles = new Vector3(0, 0, 0);
+                //playerAnimator.SetBool("bFacingRight", bFacingRight);
+                transform.eulerAngles = new Vector3(0, -180, 0);
+                //Transform firePoint = gameObject.transform.GetChild(1);
+                //firePoint.Rotate(0, 0, 0);
             }
             if (IsGrounded()) {
+                playerAnimator.SetBool("bRunning", true);
                 playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
-            } else {
+            } else { 
                 playerRigidbody2D.velocity += new Vector2(-fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
                 playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
 			}           
@@ -117,30 +193,45 @@ public class PlayerController : MonoBehaviour {
             bFacingRight = true;
 
             if(bFacingRight == true) {
-                playerAnimator.SetBool("bFacingRight", bFacingRight);
-                //transform.eulerAngles = new Vector3(0, -180, 0);
+                //playerAnimator.SetBool("bFacingRight", bFacingRight);
+                transform.eulerAngles = new Vector3(0, 0, 0);
+                //Transform firePoint = gameObject.transform.GetChild(4);
+                //Debug.Log(firePoint.gameObject.name);
+                //firePoint.Rotate(0, 180, 0);
             }
             if (IsGrounded()) {
+                playerAnimator.SetBool("bRunning", true);
                 playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
             } else {
+                playerAnimator.SetBool("bRunning", false);
                 playerRigidbody2D.velocity += new Vector2(+fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
                 playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
             }
         } else {
-			if (IsGrounded()) {
+            playerAnimator.SetBool("bRunning", false);
+            if (IsGrounded()) {
                 playerRigidbody2D.velocity = new Vector2(0, playerRigidbody2D.velocity.y);
 			}
 		}
     }
 
+    /// <summary>
+    /// Allows the player to jump by adding and up vector to the velocity of the rigidbody
+    /// </summary>
 	private void Jumping() {
-        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && blackboard.iCurrentStamina >= 10) {
+        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && blackboard.fCurrentStamina >= 10) {
+            playerAnimator.SetBool("bJumping", true);
             playerUI.UseStamina(10);
-            float fJumpVelocity = 14f;
+            float fJumpVelocity = 13f;
             playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
+        } else {
+            playerAnimator.SetBool("bJumping", false);
         }
     }
 
+    /// <summary>
+    /// By using the up and down arrows the player can move the camera to look at their surroundings
+    /// </summary>
     private void MoveCamera() {
         Vector3 velocity = Vector3.up;
         if (Input.GetKeyDown(KeyCode.UpArrow) && mainCamera.transform.position.y < fCameraMaxLookHeight) {
@@ -160,16 +251,19 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Uses a bool to know which direction the player is facing and than adds a 1.5f to their position so they can dash
+    /// </summary>
     private void PlayerDash() {
 		if (bDashIsReady) {
-            if (Input.GetKeyDown(KeyCode.C) && bFacingRight == true && blackboard.iCurrentStamina >= 15) {
+            if (Input.GetKeyDown(KeyCode.C) && bFacingRight == true && blackboard.fCurrentStamina >= 15) {
                 playerUI.UseStamina(15);
                 playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x + 1.5f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
                 bCanPlayerMove = false;
                 StartCoroutine("WaitForDash");
                 StartCoroutine("WaitForPlayerMoveAfterDash");
-            } else if(Input.GetKeyDown(KeyCode.C) && bFacingRight == false && blackboard.iCurrentStamina >= 15) {
+            } else if(Input.GetKeyDown(KeyCode.C) && bFacingRight == false && blackboard.fCurrentStamina >= 15) {
                 playerUI.UseStamina(15);
                 playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x - 1.5f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
@@ -182,36 +276,103 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// sets the bool on the animator which plays the attacking sprites
+    /// </summary>
     private void Attack() {
 		if (Input.GetKey(KeyCode.Mouse1)) {
-            swordCollider.enabled = true;
             playerAnimator.SetBool("bFacingRight", bFacingRight);
             playerAnimator.SetBool("bAttacking", true);
             StartCoroutine("WaitForAttack");
         }
 	}
 
+    /// <summary>
+    /// When the player pressing the healing key they get two health back
+    /// </summary>
+    private void PlayerHealing() {
+        blackboard.fPlayerHealth = blackboard.fPlayerHealth + 2;
+        blackboard.iHealCount -= 1;
+	}
+
+    /// <summary>
+    /// This function is used to reset the world when players save such as giving back the players heals or respawing enemies
+    /// </summary>
+    public void ResetWorld() {
+        blackboard.fPlayerHealth = blackboard.fPlayerMaxHealth;
+        blackboard.iHealCount = iHealAmmount;
+	}
+
+    /// <summary>
+    /// stops the player from moving temporaily after dashing so they cannot do it in quick succession
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator WaitForPlayerMoveAfterDash() {
         yield return new WaitForSeconds(0.8f);
         bCanPlayerMove = true;
     }
 
+    /// <summary>
+    /// Sets a recharge value on the dash
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator WaitForDash() {
         yield return new WaitForSeconds(1.5f);
         bDashIsReady = true;
     }
 
+    /// <summary>
+    /// sets a cool down on the attack so the player cannot spam attacks
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator WaitForAttack() {
-        yield return new WaitForSeconds(1.5f);
-        swordCollider.enabled = false;
+        yield return new WaitForSeconds(0.4f);
         playerAnimator.SetBool("bAttacking", false);
     }
 
+    /// <summary>
+    /// Saves the players data such as ther max health, position, stamina etc.
+    /// </summary>
     public void SavePlayer() {
         SaveSystem.SavePlayer(this); // saves the current settings and position of the player
-	}
+        blackboard.fPlayerHealth = blackboard.fPlayerMaxHealth;
+        bResetWorld = true;
+        GameObject[] fuel = GameObject.FindGameObjectsWithTag("Fuel");
+        for(int i = 0; i < fuel.Length; i++) {
+            Destroy(fuel[i]);
+		}
 
+        StartCoroutine("WaitForSave");
+    }
+
+    public IEnumerator WaitForSave() {
+        playerSaveCanvas.transform.GetChild(1).gameObject.SetActive(false);
+        playerSaveCanvas.transform.GetChild(0).gameObject.SetActive(true);
+        bCanPlayerMove = false;
+        FadeToBlack();
+        yield return new WaitForSeconds(4.0f);
+        FadeFromBlack();
+        playerSaveCanvas.transform.GetChild(1).gameObject.SetActive(true);
+    }
+
+    void FadeToBlack() {
+        FadeToBlackImage.color = Color.black;
+        FadeToBlackImage.canvasRenderer.SetAlpha(0.0f);
+        FadeToBlackImage.CrossFadeAlpha(1.0f, 2f, false);
+    }
+
+    void FadeFromBlack() {
+        FadeToBlackImage.color = Color.black;
+        FadeToBlackImage.canvasRenderer.SetAlpha(1.0f);
+        FadeToBlackImage.CrossFadeAlpha(0.0f, 2f, false);
+        bCanPlayerMove = true;
+    }
+
+    /// <summary>
+    /// loads in the players previous save
+    /// </summary>
     public void LoadPlayer() {
+        FadeFromBlack();
         PlayerData data = SaveSystem.LoadPlayer(); // loads the data of the last performed save 
 
         Vector2 v2PlayerPosition; // create a vector to set the players position
@@ -219,11 +380,29 @@ public class PlayerController : MonoBehaviour {
         v2PlayerPosition.y = data.afPlayerPositions[1];
         transform.position = v2PlayerPosition; // set the x and y of our player to that of the x and y in the save file
         blackboard.iFuelCount = data.iPlayerFuelAmmount;
-	}
+        blackboard.fPlayerMaxHealth = data.fPlayerMaxHealthAmmount;
+        blackboard.iHealCount = data.iHealAmmount;
+        blackboard.fMaxStamina = data.fMaxStamina;
+        blackboard.fPlayerHealth = blackboard.fPlayerMaxHealth; // set the players health to the maximum health value
+        itemList = data.itemList;
+
+    }
+    
+    public void LoadNewPlayer() {
+        Vector2 v2PlayerPosition; // create a vector to set the players position
+        v2PlayerPosition.x = -23.0f;
+        v2PlayerPosition.y = -0.0f;
+        transform.position = v2PlayerPosition; // set the x and y of our player to that of the x and y in the save file
+        blackboard.iFuelCount = 0;
+        blackboard.fPlayerMaxHealth = 3;
+        blackboard.iHealCount = 3;
+        blackboard.fMaxStamina = 100;
+        blackboard.fPlayerHealth = 1;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.tag == "Fuel") {
-            blackboard.iFuelCount = blackboard.iFuelCount + 10;
+            blackboard.iFuelCount = blackboard.iFuelCount + go_FuelPrefab.GetComponent<Fuel>().iFuelDropAmmount;
             Destroy(collision.gameObject);
         } 
     }
@@ -231,8 +410,31 @@ public class PlayerController : MonoBehaviour {
 	private void OnTriggerEnter2D(Collider2D collision) {
 		if(collision.gameObject.tag == "Save") {
             playerSaveCanvas.gameObject.SetActive(true);
+            playerSaveCanvas.transform.GetChild(0).gameObject.SetActive(false);
+            playerSaveCanvas.transform.GetChild(1).gameObject.SetActive(true);
+
+        }
+
+        ItemWorld itemWorld = collision.GetComponent<ItemWorld>();
+        if(itemWorld != null) {
+            inventory.AddItem(itemWorld.GetItem());
+            itemWorld.DestroySelf(); 
 		}
 	}
+
+	private void OnTriggerStay2D(Collider2D collision) {
+        if (collision.gameObject.tag == "Weapon" && Input.GetKeyDown(KeyCode.F)) {
+            Debug.Log("Weapon");
+            go_WeaponManger.GetComponent<WeaponManager>().PickUpWeapon(collision.gameObject);
+        }
+
+        if (collision.gameObject.tag == "Save") {
+            if (Input.GetKey(KeyCode.X)) {
+                SavePlayer();
+            }
+        }
+
+    }
 
 	private void OnTriggerExit2D(Collider2D collision) {
         if (collision.gameObject.tag == "Save") {

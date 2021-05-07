@@ -16,7 +16,8 @@ public abstract class Enemy : MonoBehaviour
 	/// Patrol Variables
 	/// </summary>
 	/// 
-	[System.NonSerialized] public int iEnemyHealth;
+	public float fEnemyHealth;
+	[System.NonSerialized] public float fEnemyMaxHealth;
 	[System.NonSerialized] public float fPatrolRaycastDistance;
 	[System.NonSerialized] public float fPatrolSpeedOfEnemy;
 	[System.NonSerialized] public bool bPatrolRight;
@@ -31,6 +32,12 @@ public abstract class Enemy : MonoBehaviour
 	public Transform tPlayer;
 
 	public GameObject goFuelDrop;
+
+	public Transform EnemyTransform;
+
+	public Transform RespawnPoint;
+
+	public ParticleSystem DeathXplosionEffect;
 
 	void Start()
     {
@@ -70,18 +77,31 @@ public abstract class Enemy : MonoBehaviour
 	public bool LineOfSightCheck() {
 		if (transform.rotation.y == 0) {
 			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.left, fLoSRaycastDistance, playerLayerMask);
+			RaycastHit2D rayCastInfoRight = Physics2D.Raycast(transform.position, Vector2.right, fLoSRaycastDistance / 2, playerLayerMask);
+			if (rayCastInfo.collider == true) {
+				bPlayerSpotted = true;
+			} else {
+				bPlayerSpotted = false;
+			}
+
+			if (rayCastInfoRight.collider == true) {
+				transform.eulerAngles = new Vector3(0, -180, 0);
+				bPlayerSpotted = true;
+			}
+
+		} else {
+			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.right, fLoSRaycastDistance, playerLayerMask);
+			RaycastHit2D rayCastInfoLeft = Physics2D.Raycast(transform.position, Vector2.left, fLoSRaycastDistance / 2, playerLayerMask);
 
 			if (rayCastInfo.collider == true) {
 				bPlayerSpotted = true;
 			} else {
 				bPlayerSpotted = false;
 			}
-		} else {
-			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.right, fLoSRaycastDistance, playerLayerMask);
-			if (rayCastInfo.collider == true) {
+
+			if (rayCastInfoLeft.collider == true) {
+				transform.eulerAngles = new Vector3(0, 0, 0);
 				bPlayerSpotted = true;
-			} else {
-				bPlayerSpotted = false;
 			}
 		}
 
@@ -89,8 +109,8 @@ public abstract class Enemy : MonoBehaviour
 	}
 
 	public void Attack() {
-		float fEnemyChaseSpeed = 6f;
 
+		float fEnemyChaseSpeed = 4.8f;
 		Vector2 v2PlayerPosition = new Vector2(tPlayer.position.x, tPlayer.position.y);
 		Vector2 v2EnemyPosition = new Vector2(transform.position.x, transform.position.y);
 
@@ -99,13 +119,12 @@ public abstract class Enemy : MonoBehaviour
 
 		float fDistanceBtwnEnemyAndPlayer = Vector2.Distance((new Vector2(transform.position.x, transform.position.y)), (new Vector2(tPlayer.position.x, tPlayer.position.y)));
 		//Debug.Log(fDistanceBtwnEnemyAndPlayer);
-
-		if (fDistanceBtwnEnemyAndPlayer < 2f) {
-			GetComponent<Renderer>().material.color = Color.red;
-		}
 	}
 
 	public void DropFuel(Vector3 v3FuelDropPosition) {
-		Instantiate(goFuelDrop, v3FuelDropPosition, Quaternion.identity);
+		for(int i = 0; i < 5; i++) {
+			goFuelDrop.GetComponent<Fuel>().iFuelDropAmmount = 40;
+			Instantiate(goFuelDrop, v3FuelDropPosition, Quaternion.identity);
+		}
 	}
 }

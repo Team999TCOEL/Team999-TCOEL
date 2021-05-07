@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7676314430376187634}
   - component: {fileID: 5260603475811871349}
   - component: {fileID: 8781243599565019529}
+  - component: {fileID: -904701361486084758}
   m_Layer: 0
   m_Name: Fuel
   m_TagString: Fuel
@@ -130,3 +131,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-904701361486084758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8404425401012490311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9c03f48cf696745a26deb1baaada4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

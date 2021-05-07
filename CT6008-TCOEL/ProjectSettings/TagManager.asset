@@ -9,6 +9,9 @@ TagManager:
   - Sword
   - Fuel
   - Save
+  - Weapon
+  - 9x19
+  - Wall
   layers:
   - Default
   - TransparentFX
