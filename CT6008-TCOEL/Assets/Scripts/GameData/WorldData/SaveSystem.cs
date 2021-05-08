@@ -63,6 +63,35 @@ public static class SaveSystem { // static class to stop instantiation of multip
 		}
 	}
 
+	public static void SaveShotgun(Shotgun shotgun) {
+
+		BinaryFormatter formatter = new BinaryFormatter(); // allows conversion to a binary format
+		string sFilePath = Application.persistentDataPath + "/SMG.sdat"; // creates a persistant path to the save file meaning it doesn't get moved around the system
+
+		FileStream stream = new FileStream(sFilePath, FileMode.Create); // create the save file on the system
+
+		ShotgunSaveData shotgunData = new ShotgunSaveData(shotgun); // get the player information defined in the PlayerData.cs script
+
+		formatter.Serialize(stream, shotgunData); // serialize our data into a binary format
+		stream.Close(); // close our stream to stop leaks
+	}
+
+	public static ShotgunSaveData LoadShotgun() {
+		string path = Application.persistentDataPath + "/Shotgun.sdat"; // keeps a constant path to the save file
+		if (File.Exists(path)) {
+			BinaryFormatter formatter = new BinaryFormatter(); // allows conversion to a binary format
+			FileStream stream = new FileStream(path, FileMode.Open);// opens the save file on the system
+
+			ShotgunSaveData data = formatter.Deserialize(stream) as ShotgunSaveData;// unserializes the save data
+			stream.Close(); // close our data stream to stop leaks
+
+			return data;
+		} else {
+			Debug.LogError("Save file not found in " + path);
+			return null;
+		}
+	}
+
 	public static PlayerData DeleteFiles() {
 		string[] filePaths = Directory.GetFiles(Application.persistentDataPath);
 		foreach (string filePath in filePaths) {

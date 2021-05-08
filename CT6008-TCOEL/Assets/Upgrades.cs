@@ -7,7 +7,7 @@ public class Upgrades : MonoBehaviour
 {
     #region Stamina Upgrade Variables
     private float fStaminaUpgradeMultiplier = 1.07f;
-    private float fStaminaCostMultiplier = 1.2f;
+    private float fStaminaCostMultiplier = 4f;
     private float fNewStaminaValue;
     private float fStaminaUpgradeCost;
 
@@ -46,11 +46,8 @@ public class Upgrades : MonoBehaviour
 
     public void UpgradeSMGUI() {
         fSMGDamageUpgradeCost = Mathf.RoundToInt(smg.fDamage * fSMGDamageCostMultiplier);
-        Debug.Log(fSMGDamageUpgradeCost);
 
         fNewSMGDamageValue = Mathf.RoundToInt(smg.fDamage * fSMGDamageUpgradeMultiplier);
-        Debug.Log(fNewSMGDamageValue);
-
 
         SMGDamageUpgradeText.text = Mathf.RoundToInt(smg.fDamage).ToString() + " > " + fNewSMGDamageValue.ToString();
         SMGDamageUpgradeCostText.text = fSMGDamageUpgradeCost.ToString();
@@ -64,10 +61,9 @@ public class Upgrades : MonoBehaviour
     }
 
     public void UpgradeStaminaUI() {
-        fStaminaUpgradeCost = blackBoard.fMaxStamina * fStaminaCostMultiplier;
-        fStaminaUpgradeCost = Mathf.RoundToInt(fStaminaUpgradeCost);
-        fNewStaminaValue = Mathf.RoundToInt(blackBoard.fMaxStamina * fStaminaCostMultiplier);
-        fStaminaUpgradeCost = Mathf.RoundToInt(fStaminaUpgradeCost * fStaminaCostMultiplier);
+        fStaminaUpgradeCost = Mathf.RoundToInt(blackBoard.fMaxStamina * fStaminaCostMultiplier);
+
+        fNewStaminaValue = Mathf.RoundToInt(blackBoard.fMaxStamina * fStaminaUpgradeMultiplier);
 
         StaminaUpgradeText.text = Mathf.RoundToInt(blackBoard.fMaxStamina).ToString() + " > " + fNewStaminaValue.ToString();
         StaminaUpgradeCostText.text = fStaminaUpgradeCost.ToString();
@@ -75,7 +71,7 @@ public class Upgrades : MonoBehaviour
 
     public void UpgradeStamina() {
         if(blackBoard.iFuelCount > fStaminaUpgradeCost) {
-            blackBoard.fMaxStamina = Mathf.RoundToInt((blackBoard.fMaxStamina * fStaminaCostMultiplier));
+            blackBoard.fMaxStamina = Mathf.RoundToInt((blackBoard.fMaxStamina * fStaminaUpgradeMultiplier));
             blackBoard.fCurrentStamina = Mathf.RoundToInt(blackBoard.fMaxStamina);
             blackBoard.iFuelCount = blackBoard.iFuelCount - Mathf.RoundToInt(fStaminaUpgradeCost);
 

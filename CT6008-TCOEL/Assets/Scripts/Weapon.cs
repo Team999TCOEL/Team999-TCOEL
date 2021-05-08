@@ -5,12 +5,17 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     [HideInInspector] public float fWeaponFireRate;
+    public float fOverHeatRate;
+    [HideInInspector] public float fBulletsFired;
     public float fDamage;
     [HideInInspector] public float fLastShot = 0f;
-    [SerializeField] public bool bCanFire = true;
+    [HideInInspector] public bool bRecharging;
+    [HideInInspector] public bool bCoolDown;
+    public bool bCanShoot;
 
     public Transform firePoint;
     public GameObject go_Bullet;
+    public GameObject go_Buckshot;
 
     public WeaponManager weaponManager;
     public GameObject go_WeaponManger;
@@ -30,10 +35,7 @@ public class Weapon : MonoBehaviour
         Instantiate(go_Bullet, firePoint.position, firePoint.rotation);
     }
 
-    public void Shoot() {
-        if (Time.time > fWeaponFireRate + fLastShot) {
-            InstantiateBullet();
-            fLastShot = Time.time;
-        }
+    public void InstantiateBuckshot() {
+         GameObject buckShot = Instantiate(go_Buckshot, firePoint.position, firePoint.rotation);
     }
 }

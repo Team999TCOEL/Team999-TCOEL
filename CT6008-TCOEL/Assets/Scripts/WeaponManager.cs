@@ -20,27 +20,22 @@ public class WeaponManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            SelectWeapon(0);
-        }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            SelectWeapon(1);
-        }
     }
 
     public void EquipWeapon(GameObject weapon) {
         // Check if we already is carrying a weapon
         if (go_CurrentWeapon != null) {
             // hide the weapon                
-            go_CurrentWeapon.gameObject.SetActive(false);
+            go_CurrentWeapon.gameObject.GetComponent<SpriteRenderer>().enabled = false;
         }
 
         // Add our new weapon
         go_CurrentWeapon = weapon;
 
         // Show our new weapon
-        go_CurrentWeapon.SetActive(true);
+        go_CurrentWeapon.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+        go_CurrentWeapon.gameObject.GetComponent<Weapon>().bCanShoot = true;
     }
 
     void SelectWeapon(int index) {
@@ -51,14 +46,14 @@ public class WeaponManager : MonoBehaviour
             // Check if we already is carrying a weapon
             if (go_CurrentWeapon != null) {
                 // hide the weapon                
-                go_CurrentWeapon.gameObject.SetActive(false);
+                go_CurrentWeapon.gameObject.GetComponent<SpriteRenderer>().enabled = false;
             }
 
             // Add our new weapon
             go_CurrentWeapon = go_Weapons[index];
 
             // Show our new weapon
-            go_CurrentWeapon.SetActive(true);
+            go_CurrentWeapon.gameObject.GetComponent<SpriteRenderer>().enabled = true;
         }
     }
 
@@ -66,7 +61,6 @@ public class WeaponManager : MonoBehaviour
         for(int i = 0; i < go_Weapons.Count; i++) {
             if(weapon.name != go_Weapons[i].name) {
                 go_Weapons.Add(weapon);
-                weapon.SetActive(false);
                 weapon.transform.parent = playerTransform;
                 weapon.transform.position = weaponSlot.position;
             }
@@ -75,7 +69,6 @@ public class WeaponManager : MonoBehaviour
 
     public void DropWeapon(GameObject weapon) {
         go_Weapons.Remove(weapon);
-        weapon.SetActive(false);
         go_CurrentWeapon = null;
     }
 }

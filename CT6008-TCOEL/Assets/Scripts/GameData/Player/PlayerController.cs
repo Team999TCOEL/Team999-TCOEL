@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour {
 
     public WeaponManager weaponManager;
 
-    private GameObject go_CurrentWeapon;
+    public GameObject go_CurrentWeapon;
 
     public Inventory inventory;
 
@@ -68,12 +68,15 @@ public class PlayerController : MonoBehaviour {
     public List<Items> itemList;
 
     public GameObject go_SMGPrefab;
+    public GameObject go_ShotgunPrefab;
 
     public bool bResetWorld;
 
     public GameObject go_FuelPrefab;
 
     public Image FadeToBlackImage;
+
+    public GameObject[] go_aOverHeatBars;
 
 	private void Awake() {        
         playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
@@ -112,6 +115,30 @@ public class PlayerController : MonoBehaviour {
                 weaponManager.PickUpWeapon(go_SMGPrefab);
                 weaponManager.EquipWeapon(go_SMGPrefab);
                 go_CurrentWeapon = go_SMGPrefab;
+                foreach (AnimatorControllerParameter parameter in playerAnimator.parameters) {
+                    playerAnimator.SetBool(parameter.name, false);
+                }
+                playerAnimator.SetBool("SMG", true);
+
+                for (int i = 0; i < go_aOverHeatBars.Length; i++) {
+                    go_aOverHeatBars[i].SetActive(true);
+                }
+                //GameObject currentEquippedWeapon = go_SMGPrefab;
+                //go_WeaponManger.GetComponent<WeaponManager>().go_CurrentWeapon = currentEquippedWeapon;     
+                break;
+            case Items.ItemType.Shotgun:
+                weaponManager.PickUpWeapon(go_ShotgunPrefab);
+                weaponManager.EquipWeapon(go_ShotgunPrefab);
+                go_CurrentWeapon = go_ShotgunPrefab;
+
+                foreach (AnimatorControllerParameter parameter in playerAnimator.parameters) {
+                    playerAnimator.SetBool(parameter.name, false);
+                }
+                playerAnimator.SetBool("Shotgun", true);
+
+                for (int i = 0; i < go_aOverHeatBars.Length; i++) {
+                    go_aOverHeatBars[i].SetActive(true);
+                }
                 //GameObject currentEquippedWeapon = go_SMGPrefab;
                 //go_WeaponManger.GetComponent<WeaponManager>().go_CurrentWeapon = currentEquippedWeapon;     
                 break;
@@ -123,8 +150,16 @@ public class PlayerController : MonoBehaviour {
 	}
 
     public void DropWeapon() {
+        foreach (AnimatorControllerParameter parameter in playerAnimator.parameters) {
+            playerAnimator.SetBool(parameter.name, false);
+        }
         weaponManager.DropWeapon(go_CurrentWeapon);
-	}
+
+        for (int i = 0; i < go_aOverHeatBars.Length; i++) {
+            go_aOverHeatBars[i].SetActive(false);
+        }
+
+    }
 
     void Update() {
 
@@ -138,10 +173,6 @@ public class PlayerController : MonoBehaviour {
             PlayerDash(); // call the playerdash function
             Attack(); // call the attack function
         }
-
-		if (Input.GetKeyDown(KeyCode.G)) {
-            blackboard.fPlayerMaxHealth += 1;
-		}
 
         fCameraMaxLookHeight = transform.position.y + 2; // set how high the camera can look
         fCameraMinLookHeight = transform.position.y - 2; // set how low the camera can look

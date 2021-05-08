@@ -13,6 +13,7 @@ public class Dialog : MonoBehaviour
     private int iIndex;
     public float fTypingSpeed;
     public GameObject DialogCanvas;
+    public GameObject UpgradeCanvas;
 
     public GameObject go_ContinueButton;
 
@@ -47,7 +48,10 @@ public class Dialog : MonoBehaviour
 		} else {
             textDisplay.text = "";
             DialogCanvas.SetActive(false);
-		}
+            if (UpgradeCanvas != null) {
+                UpgradeCanvas.SetActive(true);
+            }
+        }
 	}
 
 	private void OnTriggerEnter2D(Collider2D collision) {
@@ -60,12 +64,5 @@ public class Dialog : MonoBehaviour
         textDisplay.text = "";
         DialogCanvas.SetActive(false);
         iIndex = 0;
-	}
-
-    public void WorkBenchMenu() {
-        if (iIndex == sentences.Length - 1) {
-            transform.GetChild(0).gameObject.SetActive(true);
-        } 
-
 	}
 }

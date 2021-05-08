@@ -51,7 +51,7 @@ public class UI_Inventory : MonoBehaviour
 			RectTransform itemSlotRectTransform = Instantiate(itemSlotTemplate, itemSlotContainer).GetComponent<RectTransform>();
 			itemSlotRectTransform.gameObject.SetActive(true);
 
-			itemSlotRectTransform.GetComponent<ClickableObject>().MouseMiddleClickFunc = () => {
+			itemSlotRectTransform.GetComponent<ClickableObject>().ClickFunc = () => {
 				inventory.UseItem(item);
 			};
 

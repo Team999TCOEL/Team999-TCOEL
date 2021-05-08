@@ -13,5 +13,6 @@ public class ItemAssets : MonoBehaviour
 	public Transform pfItemWorld;
 
 	public Sprite SMGSprite;
+	public Sprite ShotgunSprite;
 	public Sprite healthSprite;
 }

@@ -55,7 +55,9 @@ public class Inventory
 	public void RemoveItem(Items item) {
 		if(item.itemType == Items.ItemType.SMG) {
 			playerController.DropWeapon();
-		}
+		} else if (item.itemType == Items.ItemType.Shotgun) {
+				playerController.DropWeapon();
+			}
 
 		if (item.IsStackable()) {
 			Items itemInInventory = null;

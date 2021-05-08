@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BeeEnemy : MonoBehaviour
+public class BeeEnemy : Enemy
 {
 	private float fSpeedOfEnemy = 4f;
 
@@ -46,6 +46,8 @@ public class BeeEnemy : MonoBehaviour
 			Patrol();
 		}
 
+
+
     }
 
 	private void Patrol() {
@@ -75,7 +77,7 @@ public class BeeEnemy : MonoBehaviour
 		}
 	}
 
-	public void Attack() {
+	new public void Attack() {
 		float fEnemyChaseSpeed = 10f;
 		Vector2 v2PlayerPosition = new Vector2(tPlayer.position.x, tPlayer.position.y);
 		Vector2 v2EnemyPosition = new Vector2(transform.position.x, transform.position.y);

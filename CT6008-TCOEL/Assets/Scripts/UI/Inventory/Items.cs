@@ -8,6 +8,7 @@ public class Items
 {
 	public enum ItemType {
 		SMG,
+		Shotgun,
 		Health,
 	}
 
@@ -19,6 +20,8 @@ public class Items
 			default:
 			case ItemType.SMG:
 				return ItemAssets.Instance.SMGSprite;
+			case ItemType.Shotgun:
+				return ItemAssets.Instance.ShotgunSprite;
 			case ItemType.Health:
 				return ItemAssets.Instance.healthSprite;
 
@@ -31,6 +34,8 @@ public class Items
 			case ItemType.Health:
 				return true;
 			case ItemType.SMG:
+				return false;
+			case ItemType.Shotgun:
 				return false;
 		}
 	}
