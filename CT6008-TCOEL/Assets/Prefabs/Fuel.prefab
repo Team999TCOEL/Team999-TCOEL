@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5260603475811871349}
   - component: {fileID: 8781243599565019529}
   - component: {fileID: -904701361486084758}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Fuel
   m_TagString: Fuel
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &-904701361486084758
 MonoBehaviour:
@@ -143,3 +143,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9c03f48cf696745a26deb1baaada4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iFuelDropAmmount: 40

@@ -7,14 +7,15 @@ public class Respawner : MonoBehaviour
     public GameObject go_EnemyPrefab;
     public Transform RespawnTransform;
 
+    Respawner[] respawners;
     private PlayerController playerController;
-    public bool bEnemyDead;
 
 	private void Awake() {
 	}
 
 	void Start()
     {
+        respawners = (Respawner[])GameObject.FindObjectsOfType(typeof(Respawner));
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         Respawn();
     }
@@ -22,10 +23,13 @@ public class Respawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if(playerController.bResetWorld == true && this.gameObject.transform.childCount < 1) {
-            Respawn();
+            foreach (Respawner respawner in respawners) {
+                respawner.Respawn();
+            }
             playerController.bResetWorld = false;
-        } else {
+        }  else {
             playerController.bResetWorld = false;
         }
     }

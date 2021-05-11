@@ -74,14 +74,22 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject go_FuelPrefab;
 
-    public Image FadeToBlackImage;
+    public GameObject FadeToBlackImage;
 
     public GameObject[] go_aOverHeatBars;
 
+    public GameObject go_PauseCanvas;
+
+    public GameObject go_GameOverCanvas;
+
+    public AudioSource InjuredGaspSound;
+
+    public bool bBossFightCameraActive;
+
 	private void Awake() {        
         playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
-        LoadNewPlayer();
-        //LoadPlayer();
+        //LoadNewPlayer();
+        LoadPlayer();
     }
 
 	void Start() {
@@ -109,8 +117,33 @@ public class PlayerController : MonoBehaviour {
         go_UI_Inventory.SetActive(true);
     }
 
+    void Update() {
+
+        itemList = inventory.GetItemList();
+        if(blackboard.fPlayerHealth <= 0) { // if the players health is 0 then the game is over
+            go_GameOverCanvas.SetActive(true);
+            Time.timeScale = 0.01f;
+        } else {
+            Movement(); // call the movement function
+            Jumping(); // call the jumping function
+            MoveCamera(); // call the movecamera function
+            PlayerDash(); // call the playerdash function
+            Attack(); // call the attack function
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            go_PauseCanvas.SetActive(true);
+        }
+
+        fCameraMaxLookHeight = transform.position.y + 2; // set how high the camera can look
+        fCameraMinLookHeight = transform.position.y - 2; // set how low the camera can look
+
+        iFuelAmmount = blackboard.iFuelCount; // constantly update the ammount of fuel the player has
+        fPlayerMaxHealth = blackboard.fPlayerMaxHealth;
+    }
+
     private void UseItem(Items item) {
-		switch (item.itemType) {
+        switch (item.itemType) {
             case Items.ItemType.SMG:
                 weaponManager.PickUpWeapon(go_SMGPrefab);
                 weaponManager.EquipWeapon(go_SMGPrefab);
@@ -134,6 +167,7 @@ public class PlayerController : MonoBehaviour {
                 foreach (AnimatorControllerParameter parameter in playerAnimator.parameters) {
                     playerAnimator.SetBool(parameter.name, false);
                 }
+
                 playerAnimator.SetBool("Shotgun", true);
 
                 for (int i = 0; i < go_aOverHeatBars.Length; i++) {
@@ -146,8 +180,8 @@ public class PlayerController : MonoBehaviour {
                 PlayerHealing();
                 inventory.RemoveItem(new Items { itemType = Items.ItemType.Health, iItemAmmount = 1 });
                 break;
-		}
-	}
+        }
+    }
 
     public void DropWeapon() {
         foreach (AnimatorControllerParameter parameter in playerAnimator.parameters) {
@@ -159,26 +193,6 @@ public class PlayerController : MonoBehaviour {
             go_aOverHeatBars[i].SetActive(false);
         }
 
-    }
-
-    void Update() {
-
-        itemList = inventory.GetItemList();
-        if(blackboard.fPlayerHealth <= 0) { // if the players health is 0 then the game is over
-
-		} else {
-            Movement(); // call the movement function
-            Jumping(); // call the jumping function
-            MoveCamera(); // call the movecamera function
-            PlayerDash(); // call the playerdash function
-            Attack(); // call the attack function
-        }
-
-        fCameraMaxLookHeight = transform.position.y + 2; // set how high the camera can look
-        fCameraMinLookHeight = transform.position.y - 2; // set how low the camera can look
-
-        iFuelAmmount = blackboard.iFuelCount; // constantly update the ammount of fuel the player has
-        fPlayerMaxHealth = blackboard.fPlayerMaxHealth;
     }
 
     /// <summary>
@@ -387,15 +401,15 @@ public class PlayerController : MonoBehaviour {
     }
 
     void FadeToBlack() {
-        FadeToBlackImage.color = Color.black;
-        FadeToBlackImage.canvasRenderer.SetAlpha(0.0f);
-        FadeToBlackImage.CrossFadeAlpha(1.0f, 2f, false);
+        FadeToBlackImage.GetComponent<Image>().color = Color.black;
+        FadeToBlackImage.GetComponent<Image>().canvasRenderer.SetAlpha(0.0f);
+        FadeToBlackImage.GetComponent<Image>().CrossFadeAlpha(1.0f, 2f, false);
     }
 
     void FadeFromBlack() {
-        FadeToBlackImage.color = Color.black;
-        FadeToBlackImage.canvasRenderer.SetAlpha(1.0f);
-        FadeToBlackImage.CrossFadeAlpha(0.0f, 2f, false);
+        FadeToBlackImage.GetComponent<Image>().color = Color.black;
+        FadeToBlackImage.GetComponent<Image>().canvasRenderer.SetAlpha(1.0f);
+        FadeToBlackImage.GetComponent<Image>().CrossFadeAlpha(0.0f, 2f, false);
         bCanPlayerMove = true;
     }
 
@@ -403,6 +417,8 @@ public class PlayerController : MonoBehaviour {
     /// loads in the players previous save
     /// </summary>
     public void LoadPlayer() {
+        go_GameOverCanvas.SetActive(false);
+        Time.timeScale = 1.0f;
         FadeFromBlack();
         PlayerData data = SaveSystem.LoadPlayer(); // loads the data of the last performed save 
 
@@ -417,6 +433,8 @@ public class PlayerController : MonoBehaviour {
         blackboard.fPlayerHealth = blackboard.fPlayerMaxHealth; // set the players health to the maximum health value
         itemList = data.itemList;
 
+        mainCamera.transform.position = new Vector3(data.afCameraPositions[0], data.afCameraPositions[1], data.afCameraPositions[2]);
+
     }
     
     public void LoadNewPlayer() {
@@ -429,13 +447,15 @@ public class PlayerController : MonoBehaviour {
         blackboard.iHealCount = 3;
         blackboard.fMaxStamina = 100;
         blackboard.fPlayerHealth = 1;
+
+        mainCamera.transform.position = new Vector3(-23.0f, 0.5f, -10.0f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.tag == "Fuel") {
             blackboard.iFuelCount = blackboard.iFuelCount + go_FuelPrefab.GetComponent<Fuel>().iFuelDropAmmount;
             Destroy(collision.gameObject);
-        } 
+        }
     }
 
 	private void OnTriggerEnter2D(Collider2D collision) {
@@ -444,6 +464,11 @@ public class PlayerController : MonoBehaviour {
             playerSaveCanvas.transform.GetChild(0).gameObject.SetActive(false);
             playerSaveCanvas.transform.GetChild(1).gameObject.SetActive(true);
 
+        }
+
+        if (collision.gameObject.tag == "Fuel") {
+            blackboard.iFuelCount = blackboard.iFuelCount + go_FuelPrefab.GetComponent<Fuel>().iFuelDropAmmount;
+            Destroy(collision.gameObject);
         }
 
         ItemWorld itemWorld = collision.GetComponent<ItemWorld>();

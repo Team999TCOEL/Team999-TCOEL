@@ -27,6 +27,7 @@ public class LittleRobotAttack : MonoBehaviour
 
             StartCoroutine("WaitForAttackRecharge");
             blackboard.fPlayerHealth -= 1;
+            tPlayer.gameObject.GetComponent<PlayerController>().InjuredGaspSound.Play();
             transform.GetComponent<EdgeCollider2D>().gameObject.SetActive(true);
         }
     }

@@ -12,15 +12,15 @@ public class Bee : Enemy
 
 	private float fSpeedOfEnemy;
 
-	public LayerMask wallLayerMask;
-
 	public BlackBoard blackboard;
 
 	private bool bAttackEnemy;
 
+	public AudioSource BuzzingSound;
 
 	void Start() {
-        fEnemyHealth = 300;
+		fLastHealth = fEnemyHealth;
+		fEnemyHealth = 300;
         fEnemyMaxHealth = 300;
         fPatrolRaycastDistance = 4f;
         fPatrolSpeedOfEnemy = 2f;
@@ -36,18 +36,40 @@ public class Bee : Enemy
 
 	void Update() {
 
+		if (fEnemyHealth < fLastHealth) {
+			TakingDamageSound.Play();
+			fLastHealth = fEnemyHealth;
+		} else {
+			fLastHealth = fEnemyHealth;
+		}
+
 
 		if (fEnemyHealth > 0) {
-			if (LineOfSightCheck() == true) {
+			if (LineOfSightCheck() == true && tPlayer.GetComponent<PlayerController>().bBossFightCameraActive == false) {
+				if (AttackSound.isPlaying == false) {
+					AttackSound.Play();
+				}
 				Attack();
 			} else {
-				Patrol();;
+				Patrol();
+				AttackSound.Stop();
 			}
 		} else {
 			Vector3 v3DeathPosition = transform.position;
 			DropFuel(v3DeathPosition);
 			Instantiate(DeathXplosionEffect, transform.position, transform.rotation);
 			Destroy(gameObject);
+		}
+
+		float fDistanceBetweenThisAndPlayer = Vector3.Distance(transform.position, tPlayer.transform.position);
+
+		if(fDistanceBetweenThisAndPlayer < 12f) {
+			if(BuzzingSound.isPlaying == false){
+				BuzzingSound.Play();
+			}
+			BuzzingSound.volume = Mathf.Clamp((1 * fDistanceBetweenThisAndPlayer), 0.01f, 0.065f);
+		} else {
+			BuzzingSound.Stop();
 		}
 	}
 
@@ -84,7 +106,9 @@ public class Bee : Enemy
 	new public bool LineOfSightCheck() {
 		if (bAttackEnemy == true) {
 			RaycastHit2D rayCastInfo = Physics2D.Raycast(transform.position, Vector2.down, fLoSRaycastDistance, playerLayerMask);
-			if (rayCastInfo.collider == true) {
+			RaycastHit2D rayCastInfoLeft = Physics2D.Raycast(new Vector2(transform.position.x -2f, transform.position.y), Vector2.down, fLoSRaycastDistance, playerLayerMask);
+			RaycastHit2D rayCastInfoRight = Physics2D.Raycast(new Vector2(transform.position.x + 2f, transform.position.y), Vector2.down, fLoSRaycastDistance, playerLayerMask);
+			if (rayCastInfo.collider == true || rayCastInfoLeft == true || rayCastInfoRight == true) {
 				bPlayerSpotted = true;
 			} else {
 				bPlayerSpotted = false;

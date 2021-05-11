@@ -6,6 +6,7 @@ public class Robot : Enemy
 {
     void Start()
     {
+        fLastHealth = fEnemyHealth;
         fEnemyHealth = 200;
         fEnemyMaxHealth = 200;
         fPatrolRaycastDistance = 1f;
@@ -15,16 +16,26 @@ public class Robot : Enemy
         tPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (fEnemyHealth < fLastHealth) {
+            TakingDamageSound.Play();
+            fLastHealth = fEnemyHealth;
+        } else {
+            fLastHealth = fEnemyHealth;
+        }
+
         if (fEnemyHealth > 0) {
-            if (LineOfSightCheck() == true) {
+            if (LineOfSightCheck() == true && tPlayer.GetComponent<PlayerController>().bBossFightCameraActive == false) {
                 animator.SetBool("AttackPlayer", true);
                 //Debug.Log("Player Sighted");
+                if(AttackSound.isPlaying == false) {
+                    AttackSound.Play();
+				}
                 Attack();
             } else {
                 animator.SetBool("AttackPlayer", false);
+                AttackSound.Stop();
                 Patrol();
                 //Debug.Log("Patrol");
             }

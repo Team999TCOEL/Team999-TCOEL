@@ -5,6 +5,8 @@ using UnityEngine;
 public abstract class Enemy : MonoBehaviour
 {
 	public Animator animator;
+	public AudioSource AttackSound;
+	public AudioSource TakingDamageSound;
 
 	/// <summary>
 	/// Layer Masks
@@ -17,6 +19,7 @@ public abstract class Enemy : MonoBehaviour
 	/// </summary>
 	/// 
 	public float fEnemyHealth;
+	[System.NonSerialized] public float fLastHealth;
 	[System.NonSerialized] public float fEnemyMaxHealth;
 	[System.NonSerialized] public float fPatrolRaycastDistance;
 	[System.NonSerialized] public float fPatrolSpeedOfEnemy;
@@ -126,5 +129,9 @@ public abstract class Enemy : MonoBehaviour
 			goFuelDrop.GetComponent<Fuel>().iFuelDropAmmount = 40;
 			Instantiate(goFuelDrop, v3FuelDropPosition, Quaternion.identity);
 		}
+	}
+
+	private void OnTriggerEnter2D(Collider2D collision) {
+		
 	}
 }

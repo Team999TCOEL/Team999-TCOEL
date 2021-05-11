@@ -12,6 +12,7 @@ TagManager:
   - Weapon
   - 9x19
   - Wall
+  - Plague
   layers:
   - Default
   - TransparentFX
@@ -25,9 +26,9 @@ TagManager:
   - Player
   - Wall
   - Sword
-  - 
-  - 
-  - 
+  - PostProcessing
+  - Enemy
+  - Fuel
   - 
   - 
   - 

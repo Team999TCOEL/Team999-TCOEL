@@ -12,6 +12,8 @@ public class PlayerData
 	public float fMaxStamina;
 	public List<Items> itemList;
 
+	public float[] afCameraPositions;
+
 	public PlayerData(PlayerController playerController) {
 		afPlayerPositions = new float[2];
 		afPlayerPositions[0] = playerController.transform.position.x;
@@ -21,5 +23,10 @@ public class PlayerData
 		iHealAmmount = playerController.iHealAmmount;
 		fMaxStamina = playerController.fMaxStamina;
 		itemList = playerController.itemList;
+
+		afCameraPositions = new float[3];
+		afCameraPositions[0] = playerController.mainCamera.transform.position.x;
+		afCameraPositions[1] = playerController.mainCamera.transform.position.y;
+		afCameraPositions[2] = playerController.mainCamera.transform.position.z;
 	}
 }

@@ -46,5 +46,11 @@ public class Bullet : MonoBehaviour
         if(collision.gameObject.tag == "Wall") {
             Destroy(gameObject);
         }
-	}
+
+        if (collision.gameObject.tag == "Plague") {
+            Destroy(gameObject);
+            collision.GetComponent<PlagueWatcher>().fEnemyHealth -= smg.fDamage;
+
+        }
+    }
 }

@@ -47,7 +47,7 @@ public class SMG : Weapon
 
     IEnumerator CoolDown() {
         bRecharging = true;
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(8f);
         fBulletsFired = fOverHeatRate;
         bRecharging = false;
 

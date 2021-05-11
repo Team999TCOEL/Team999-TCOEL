@@ -83,6 +83,9 @@ public class UI_Inventory : MonoBehaviour
 				case Items.ItemType.SMG:
 					uiItemName.SetText("SMG");
 					break;
+				case Items.ItemType.Shotgun:
+					uiItemName.SetText("Shotgun");
+					break;
 				case Items.ItemType.Health:
 					uiItemName.SetText("Health Potion");
 					break;
