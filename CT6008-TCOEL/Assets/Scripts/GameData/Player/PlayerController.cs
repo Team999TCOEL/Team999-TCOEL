@@ -88,8 +88,8 @@ public class PlayerController : MonoBehaviour {
 
 	private void Awake() {        
         playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
-        //LoadNewPlayer();
-        LoadPlayer();
+        LoadNewPlayer();
+        //LoadPlayer();
     }
 
 	void Start() {

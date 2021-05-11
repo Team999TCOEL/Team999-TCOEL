@@ -22,6 +22,8 @@ public class Weapon : MonoBehaviour
 
     public BlackBoard blackBoard;
 
+    public AudioSource ShootSound;
+
 	private void Start() {
 
     }

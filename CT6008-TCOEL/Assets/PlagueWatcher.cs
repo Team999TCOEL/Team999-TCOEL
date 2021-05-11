@@ -47,6 +47,16 @@ public class PlagueWatcher : MonoBehaviour
 
     public ParticleSystem DeathXplosionEffect;
 
+    public AudioSource PlagueWatcherSoundTrack;
+
+    public AudioSource LaserSound;
+
+    public AudioSource GroundSlam;
+
+    public AudioSource backGroundMusic;
+
+    public Animator plagueWatcherAnimator;
+
     void Start()
     {
         bLaserReady = false;
@@ -81,9 +91,13 @@ public class PlagueWatcher : MonoBehaviour
             Debug.Log(iChooseAttack);
         }
 
-
-
         if (player.bBossFightCameraActive == true) {
+            backGroundMusic.Pause();
+            if(PlagueWatcherSoundTrack.isPlaying == false) {
+                PlagueWatcherSoundTrack.Play();
+            }
+
+            //PlagueWatcherSoundTrack.volume = Mathf.Clamp(0.05f, 0.01f, 0.065f);
             if (fEnemyHealth > 0) {
                 for (int i = 0; i < go_aHealthBars.Length; i++) {
                     go_aHealthBars[i].SetActive(true);
@@ -115,6 +129,7 @@ public class PlagueWatcher : MonoBehaviour
                 DropFuel(transform.position);
                 Instantiate(DeathXplosionEffect, transform.position, transform.rotation);
                 CloseDoor.SetActive(false);
+                backGroundMusic.Play();
                 Destroy(gameObject);
             }
         }
@@ -122,7 +137,12 @@ public class PlagueWatcher : MonoBehaviour
 
     private void ShootLaser() {
         LaserLineRenderer.enabled = true;
+        if(LaserSound.isPlaying == false) {
+            LaserSound.Play();
+        }
+
         if (i < 3) {
+
             if (Physics2D.Raycast(endLaserTransform.position, Vector2.left, 0.1f, playerLayerMask) || Physics2D.Raycast(endLaserTransform.position, (Vector2.up + Vector2.right + Vector2.right + Vector2.right), 4f, playerLayerMask)) {
                 StartCoroutine("WaitForLaserRecharge");
             }
@@ -175,25 +195,20 @@ public class PlagueWatcher : MonoBehaviour
 	}
 
     private void GroundAttack() {
+        plagueWatcherAnimator.SetBool("bSlamAttack", true);
+        GroundSlam.Play();
+        for (int i = 0; i < 7; i++) {
 
-        for (int i = 0; i < 3; i++) {
             int index = Random.Range(0, go_aGroundAttackColliders.Length);
             ParticleSystem warningSystem = go_aGroundAttackColliders[index].transform.GetChild(0).gameObject.GetComponent<ParticleSystem>();
             warningSystem.Play();
 
             //go_aGroundAttackColliders[index].GetComponent<BoxCollider2D>().enabled = true;
             ParticleSystem attackSystem = go_aGroundAttackColliders[index].transform.GetChild(1).gameObject.GetComponent<ParticleSystem>();
-            attackSystem.gameObject.GetComponent<BoxCollider2D>().enabled = true;
 
-            if(attackSystem.gameObject.GetComponent<BoxCollider2D>().enabled == false) {
-                attackSystem.gameObject.GetComponent<BoxCollider2D>().enabled = true;
-            }
+            attackSystem.GetComponent<BoxCollider2D>().enabled = true;
 
             attackSystem.Play();
-
-            if(attackSystem.isPlaying != true) {
-                attackSystem.gameObject.GetComponent<BoxCollider2D>().enabled = false;
-            }
         }
 
         StartCoroutine("GroundAttackRecharge");
@@ -202,7 +217,10 @@ public class PlagueWatcher : MonoBehaviour
 
     IEnumerator GroundAttackRecharge() {
         yield return new WaitForSeconds(9f);
+        bGroundAttack = false;
         bChooseAnAttack = true;
+        plagueWatcherAnimator.SetBool("bSlamAttack", false);
+
     }
 
     public void DropFuel(Vector3 v3FuelDropPosition) {

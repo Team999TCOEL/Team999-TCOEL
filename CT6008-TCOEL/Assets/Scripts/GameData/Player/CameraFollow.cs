@@ -30,9 +30,11 @@ public class CameraFollow : MonoBehaviour {
         if (!Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow) && bBossFightCamera == false) {
             if (target) {
                 Vector3 point = playerCamera.WorldToViewportPoint(target.position);
-                Vector3 delta = target.position - playerCamera.ViewportToWorldPoint(new Vector3(0.35f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
+                Vector3 delta = target.position - playerCamera.ViewportToWorldPoint(new Vector3(0.35f, 0.45f, point.z)); //(new Vector3(0.5, 0.5, point.z));
                 Vector3 destination = transform.position + delta;
                 transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
+                transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
+                playerCamera.orthographicSize = Mathf.MoveTowards(playerCamera.orthographicSize, 4.85f, fSmoothSpeed * Time.deltaTime);
             }
         }
 

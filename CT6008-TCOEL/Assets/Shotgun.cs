@@ -23,7 +23,7 @@ public class Shotgun : Weapon
         if (Input.GetKeyDown(KeyCode.F) && weaponManager.go_CurrentWeapon.name == this.name && blackBoard.fPlayerHealth > 0 && fBulletsFired > 0 && bCanShoot == true) {
             fBulletsFired--;
             StartCoroutine("FireRate");
-            Debug.Log(fBulletsFired);
+            ShootSound.Play();
             fLastShot = Time.time;
         } else if (!Input.GetKey(KeyCode.F) && fBulletsFired <= fOverHeatRate && bRecharging == false && bCoolDown == false) {
             Debug.Log("Recharging");
