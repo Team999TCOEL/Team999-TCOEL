@@ -6,6 +6,13 @@ TagManager:
   tags:
   - BlackBoard
   - Enemy
+  - Sword
+  - Fuel
+  - Save
+  - Weapon
+  - 9x19
+  - Wall
+  - Plague
   layers:
   - Default
   - TransparentFX
@@ -18,10 +25,10 @@ TagManager:
   - Platform
   - Player
   - Wall
-  - 
-  - 
-  - 
-  - 
+  - Sword
+  - PostProcessing
+  - Enemy
+  - Fuel
   - 
   - 
   - 

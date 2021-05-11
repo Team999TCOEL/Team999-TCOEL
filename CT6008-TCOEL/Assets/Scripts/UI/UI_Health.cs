@@ -28,15 +28,15 @@ public class UI_Health : MonoBehaviour
     void Update() {
 
         // If health is more than the number of hearts then set health to number of hearts
-        if (blackBoard.iPlayerHealth > iNumOfHearts) {
-            blackBoard.iPlayerHealth = iNumOfHearts;
+        if (blackBoard.fPlayerHealth > iNumOfHearts) {
+            blackBoard.fPlayerHealth = iNumOfHearts;
         }
 
         // If i is less than hearts in heart array
         for (int i = 0; i < hearts.Length; i++) {
 
             // if i is less than health, set heart to full heart sprite
-            if (i < blackBoard.iPlayerHealth) {
+            if (i < blackBoard.fPlayerHealth) {
                 hearts[i].sprite = sFullHeart;
             } else { // if i is more than health, set heart to broken heart sprite
                 hearts[i].sprite = sBrokenHeart;

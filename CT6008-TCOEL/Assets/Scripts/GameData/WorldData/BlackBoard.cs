@@ -11,5 +11,10 @@ using UnityEngine;
 
 public class BlackBoard : MonoBehaviour
 {
-	public int iPlayerHealth;
+	public float fPlayerHealth;
+	public float fPlayerMaxHealth;
+	public float fMaxStamina;
+	public float fCurrentStamina;
+	public int iFuelCount;
+	public int iHealCount;
 }
