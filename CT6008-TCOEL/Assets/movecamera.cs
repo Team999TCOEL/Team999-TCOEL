@@ -14,7 +14,7 @@ public class movecamera : MonoBehaviour
     void Update()
     {
 		if (Input.GetKey(KeyCode.Z)) {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(-20.41336f, 0.479506f, -10), 0.1f);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(300f, 0.479506f, -10), 0.01f);
 		}
     }
 }
