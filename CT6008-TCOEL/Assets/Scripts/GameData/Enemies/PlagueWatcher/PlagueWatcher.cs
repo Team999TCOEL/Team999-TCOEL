@@ -153,7 +153,7 @@ public class PlagueWatcher : MonoBehaviour
                 StartCoroutine("WaitForLaserRecharge");
             }
             fCurrentSpeed = Mathf.SmoothStep(fMinSpeed, fMaxSpeed, fTime / fAccelerationTime);
-            endLaserTransform.position = Vector3.MoveTowards(endLaserTransform.position, new Vector3(183, -0.75f, -107), fCurrentSpeed);
+            endLaserTransform.position = Vector3.MoveTowards(endLaserTransform.position, new Vector3(221.735f, -0.75f, -107), fCurrentSpeed);
             fTime += Time.deltaTime;
 
             //endLaserTransform.position = Vector3.Lerp(v3_StartPosition, new Vector3(183, -0.75f, -107), 1.25f * Time.deltaTime);
