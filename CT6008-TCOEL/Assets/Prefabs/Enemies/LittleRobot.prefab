@@ -344,13 +344,17 @@ MonoBehaviour:
   playerLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  fEnemyHealth: 0
+  blockLayerMask:
+    serializedVersion: 2
+    m_Bits: 32768
+  fEnemyMaxHealth: 120
   tGroundDetection: {fileID: 6168346346928014615}
   tPlayer: {fileID: 0}
-  goFuelDrop: {fileID: 8404425401012490311, guid: fc63bbe86920efb4db387b76bf492cbe,
-    type: 3}
   EnemyTransform: {fileID: 6168346346250118993}
   RespawnPoint: {fileID: 6168346346250118993}
+  iFuelDropAmmount: 30
+  goFuelDrop: {fileID: 8404425401012490311, guid: fc63bbe86920efb4db387b76bf492cbe,
+    type: 3}
   DeathXplosionEffect: {fileID: 6040756465797097396, guid: fae3cff5b7d0ee44385673daa59aee25,
     type: 3}
 --- !u!82 &291836450615026159
