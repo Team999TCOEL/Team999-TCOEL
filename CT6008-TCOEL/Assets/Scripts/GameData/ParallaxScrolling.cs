@@ -1,4 +1,14 @@
-﻿using System.Collections;
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// File:                 <ParallaxScrolling.cs>
+// Author:               <Morgan Ellis>
+// Date Created:         <13/03/2021>
+// Brief:                <responsible for the parallax background>
+// Last Edited By:       <Morgan Ellis
+// Last Edited Date:     <17/05/2021>
+// Last Edit Brief:      <N/A>
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

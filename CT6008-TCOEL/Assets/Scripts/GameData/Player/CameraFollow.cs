@@ -27,7 +27,7 @@ public class CameraFollow : MonoBehaviour {
     }
 
 	private void FixedUpdate() {
-        if (!Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow) && bBossFightCamera == false) {
+        if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow) && bBossFightCamera == false) {
             if (target) {
                 Vector3 point = playerCamera.WorldToViewportPoint(target.position);
                 Vector3 delta = target.position - playerCamera.ViewportToWorldPoint(new Vector3(0.35f, 0.45f, point.z)); //(new Vector3(0.5, 0.5, point.z));

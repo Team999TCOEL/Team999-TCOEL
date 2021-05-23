@@ -8,7 +8,7 @@
 // Last Edit Brief:      <The character is now able to run and heal>
 ////////////////////////////////////////////////////////////
 
-
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +17,8 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour {
 
     [SerializeField] private LayerMask platformLayerMask; // layermask so the player can detect the ground
+
+    [SerializeField] private LayerMask blockLayerMask; // layermask so the player can detect the ground
 
     private float fMoveSpeed = 6f; // defines how fast the players moves
 
@@ -84,13 +86,22 @@ public class PlayerController : MonoBehaviour {
 
     public AudioSource InjuredGaspSound;
 
-    public bool bBossFightCameraActive;
+    public AudioSource SnowCrunching;
 
-	private void Awake() {        
+    [SerializeField] public bool bBossFightCameraActive;
+
+    private bool bIsCrouching;
+
+    private void Awake() {
         playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
+		//if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
+		//	LoadPlayer();
+		//} else {
+		//	LoadNewPlayer();
+		//}
+
         LoadNewPlayer();
-        //LoadPlayer();
-    }
+	}
 
 	void Start() {
         bResetWorld = false;
@@ -129,14 +140,15 @@ public class PlayerController : MonoBehaviour {
             MoveCamera(); // call the movecamera function
             PlayerDash(); // call the playerdash function
             Attack(); // call the attack function
+            Crouch();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             go_PauseCanvas.SetActive(true);
         }
 
-        fCameraMaxLookHeight = transform.position.y + 2; // set how high the camera can look
-        fCameraMinLookHeight = transform.position.y - 2; // set how low the camera can look
+        fCameraMaxLookHeight = transform.position.x + 5f; // set how high the camera can look
+        fCameraMinLookHeight = transform.position.x - 3.5f; // set how low the camera can look
 
         iFuelAmmount = blackboard.iFuelCount; // constantly update the ammount of fuel the player has
         fPlayerMaxHealth = blackboard.fPlayerMaxHealth;
@@ -152,6 +164,7 @@ public class PlayerController : MonoBehaviour {
                     playerAnimator.SetBool(parameter.name, false);
                 }
                 playerAnimator.SetBool("SMG", true);
+                playerAnimator.SetBool("Crouching", bIsCrouching);
 
                 for (int i = 0; i < go_aOverHeatBars.Length; i++) {
                     go_aOverHeatBars[i].SetActive(true);
@@ -169,6 +182,7 @@ public class PlayerController : MonoBehaviour {
                 }
 
                 playerAnimator.SetBool("Shotgun", true);
+                playerAnimator.SetBool("Crouching", bIsCrouching);
 
                 for (int i = 0; i < go_aOverHeatBars.Length; i++) {
                     go_aOverHeatBars[i].SetActive(true);
@@ -222,13 +236,10 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKey(KeyCode.A) && bCanPlayerMove == true) {
             bFacingRight = false;
             if (bFacingRight == false) {
-                //playerAnimator.SetBool("bFacingRight", bFacingRight);
                 transform.eulerAngles = new Vector3(0, -180, 0);
-                //Transform firePoint = gameObject.transform.GetChild(1);
-                //firePoint.Rotate(0, 0, 0);
             }
             if (IsGrounded()) {
-                playerAnimator.SetBool("bRunning", true);
+                playerAnimator.SetBool("Running", true);
                 playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
             } else { 
                 playerRigidbody2D.velocity += new Vector2(-fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
@@ -236,30 +247,46 @@ public class PlayerController : MonoBehaviour {
 			}           
         } else if (Input.GetKey(KeyCode.D) && bCanPlayerMove == true) {
             bFacingRight = true;
-
-            if(bFacingRight == true) {
-                //playerAnimator.SetBool("bFacingRight", bFacingRight);
+            if (bFacingRight == true) {
                 transform.eulerAngles = new Vector3(0, 0, 0);
-                //Transform firePoint = gameObject.transform.GetChild(4);
-                //Debug.Log(firePoint.gameObject.name);
-                //firePoint.Rotate(0, 180, 0);
             }
             if (IsGrounded()) {
-                playerAnimator.SetBool("bRunning", true);
+                playerAnimator.SetBool("Running", true);
                 playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
             } else {
-                playerAnimator.SetBool("bRunning", false);
+                playerAnimator.SetBool("Running", false);
                 playerRigidbody2D.velocity += new Vector2(+fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
                 playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
             }
         } else {
-            playerAnimator.SetBool("bRunning", false);
+            playerAnimator.SetBool("Running", false);
             if (IsGrounded()) {
                 playerRigidbody2D.velocity = new Vector2(0, playerRigidbody2D.velocity.y);
 			}
 		}
     }
 
+    /// <summary>
+    /// Function that lets the player climb a ladder
+    /// </summary>
+    private void ClimbLadder() {
+        float fClimbSpeed = 3f;
+		if (Input.GetKey(KeyCode.W)) {
+            playerRigidbody2D.velocity = new Vector2(playerRigidbody2D.velocity.x, +fClimbSpeed);
+        }
+    }
+
+    private void Crouch() {
+		if (Input.GetKeyDown(KeyCode.C)) {
+            playerAnimator.SetBool("Crouching", true);
+            bCanPlayerMove = false;
+            bIsCrouching = true;
+		} else if (Input.GetKeyUp(KeyCode.C)) {
+            playerAnimator.SetBool("Crouching", false);
+            bIsCrouching = false;
+            bCanPlayerMove = true;
+        }
+	}
     /// <summary>
     /// Allows the player to jump by adding and up vector to the velocity of the rigidbody
     /// </summary>
@@ -278,20 +305,19 @@ public class PlayerController : MonoBehaviour {
     /// By using the up and down arrows the player can move the camera to look at their surroundings
     /// </summary>
     private void MoveCamera() {
-        Vector3 velocity = Vector3.up;
-        if (Input.GetKeyDown(KeyCode.UpArrow) && mainCamera.transform.position.y < fCameraMaxLookHeight) {
+        if (Input.GetKeyDown(KeyCode.RightArrow) && mainCamera.transform.position.x < fCameraMaxLookHeight) {
             bCanPlayerMove = false;
-            Vector3 v3TargetPos = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y + 5f, mainCamera.transform.position.z);
-            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, transform.position.y + 5);
-        } else if (Input.GetKeyUp(KeyCode.UpArrow)) {
+            Vector3 v3TargetPos = new Vector3(mainCamera.transform.position.x + 5, mainCamera.transform.position.y, mainCamera.transform.position.z);
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, transform.position.x + 5);
+        } else if (Input.GetKeyUp(KeyCode.RightArrow)) {
             bCanPlayerMove = true;
 		}
         
-        if (Input.GetKeyDown(KeyCode.DownArrow) && mainCamera.transform.position.y > fCameraMinLookHeight) {
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && mainCamera.transform.position.x > fCameraMinLookHeight) {
             bCanPlayerMove = false;
-            Vector3 v3TargetPos = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y - 5f, mainCamera.transform.position.z);
-            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, transform.position.y + 5);
-		} else if (Input.GetKeyUp(KeyCode.DownArrow)) {
+            Vector3 v3TargetPos = new Vector3(mainCamera.transform.position.x - 5, mainCamera.transform.position.y, mainCamera.transform.position.z);
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, v3TargetPos, transform.position.x + 5);
+		} else if (Input.GetKeyUp(KeyCode.LeftArrow)) {
             bCanPlayerMove = true;
         }
     }
@@ -300,17 +326,21 @@ public class PlayerController : MonoBehaviour {
     /// Uses a bool to know which direction the player is facing and than adds a 1.5f to their position so they can dash
     /// </summary>
     private void PlayerDash() {
-		if (bDashIsReady) {
-            if (Input.GetKeyDown(KeyCode.C) && bFacingRight == true && blackboard.fCurrentStamina >= 15) {
+        RaycastHit2D blockedInfoRight = Physics2D.Raycast(transform.position, Vector2.right, 7.1f, blockLayerMask); 
+        RaycastHit2D blockedInfoLeft = Physics2D.Raycast(transform.position, Vector2.left, 7.1f, blockLayerMask); 
+
+
+        if (bDashIsReady) {
+            if (Input.GetKeyDown(KeyCode.V) && bFacingRight == true && blackboard.fCurrentStamina >= 15 && blockedInfoRight.collider == null) {
                 playerUI.UseStamina(15);
-                playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x + 1.5f, playerRigidbody2D.position.y);
+                playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x + 7.0f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
                 bCanPlayerMove = false;
                 StartCoroutine("WaitForDash");
                 StartCoroutine("WaitForPlayerMoveAfterDash");
-            } else if(Input.GetKeyDown(KeyCode.C) && bFacingRight == false && blackboard.fCurrentStamina >= 15) {
+            } else if(Input.GetKeyDown(KeyCode.V) && bFacingRight == false && blackboard.fCurrentStamina >= 15 && blockedInfoLeft.collider == null) {
                 playerUI.UseStamina(15);
-                playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x - 1.5f, playerRigidbody2D.position.y);
+                playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x - 7.0f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
                 bCanPlayerMove = false;
                 StartCoroutine("WaitForDash");
@@ -353,7 +383,7 @@ public class PlayerController : MonoBehaviour {
     /// </summary>
     /// <returns></returns>
     public IEnumerator WaitForPlayerMoveAfterDash() {
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.4f);
         bCanPlayerMove = true;
     }
 
@@ -434,12 +464,23 @@ public class PlayerController : MonoBehaviour {
         itemList = data.itemList;
 
         mainCamera.transform.position = new Vector3(data.afCameraPositions[0], data.afCameraPositions[1], data.afCameraPositions[2]);
+    }
 
+    public void Retry() {
+        if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
+            LoadPlayer();
+        } else {
+            LoadNewPlayer();
+        }
     }
     
     public void LoadNewPlayer() {
+        go_GameOverCanvas.SetActive(false);
+        Time.timeScale = 1.0f;
+        FadeFromBlack();
+
         Vector2 v2PlayerPosition; // create a vector to set the players position
-        v2PlayerPosition.x = -23.0f;
+        v2PlayerPosition.x = -22.0f;
         v2PlayerPosition.y = -0.0f;
         transform.position = v2PlayerPosition; // set the x and y of our player to that of the x and y in the save file
         blackboard.iFuelCount = 0;
@@ -476,7 +517,11 @@ public class PlayerController : MonoBehaviour {
             inventory.AddItem(itemWorld.GetItem());
             itemWorld.DestroySelf(); 
 		}
-	}
+
+        if (collision.gameObject.tag == "Ladder") {
+            ClimbLadder();
+        }
+    }
 
 	private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.tag == "Weapon" && Input.GetKeyDown(KeyCode.F)) {
@@ -489,6 +534,16 @@ public class PlayerController : MonoBehaviour {
                 SavePlayer();
             }
         }
+
+        if(collision.gameObject.tag == "Ladder") {
+            ClimbLadder();
+		}
+
+        if(collision.gameObject.tag == "Snow") {
+			if (SnowCrunching.isPlaying == false) {
+                SnowCrunching.Play();
+			}
+		}
 
     }
 

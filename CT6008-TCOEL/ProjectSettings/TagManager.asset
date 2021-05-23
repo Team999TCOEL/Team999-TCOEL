@@ -13,6 +13,8 @@ TagManager:
   - 9x19
   - Wall
   - Plague
+  - Ladder
+  - Snow
   layers:
   - Default
   - TransparentFX
@@ -29,7 +31,7 @@ TagManager:
   - PostProcessing
   - Enemy
   - Fuel
-  - 
+  - Block
   - 
   - 
   - 
