@@ -52,5 +52,12 @@ public class Buckshot : MonoBehaviour
 
         }
 
+        // If the bullet collides with a blocker then destroy the bullet
+        if (collision.gameObject.tag == "EnemyBlocker") {
+            Destroy(gameObject);
+        }
+
+
     }
+    
 }

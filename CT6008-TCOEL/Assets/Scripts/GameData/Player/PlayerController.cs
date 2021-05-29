@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////
 // File:                 <PlayerController.cs>
-// Author:               <Morgan Ellis>
+// Author:               <Morgan Ellis & Jack Peedle>
 // Date Created:         <30/01/2021>
 // Brief:                <File responsible for the movements of the player such as jumping>
 // Last Edited By:       <Morgan Ellis
@@ -86,22 +86,38 @@ public class PlayerController : MonoBehaviour {
 
     public AudioSource InjuredGaspSound;
 
-    public AudioSource SnowCrunching;
+    //public AudioSource SnowCrunching;
 
     [SerializeField] public bool bBossFightCameraActive;
 
     private bool bIsCrouching;
 
+
+    /// <summary>
+    /// Jack Created 
+    /// </summary>
+     
+    // Reference to the sound manager
+    public SoundManager soundManager;
+
+    // Reference to the boss defeated script
+    public WhenBossDefeated whenBossDefeated;
+
+    /// <summary>
+    /// End of Jacks work
+    /// </summary>
+
+    
+
     private void Awake() {
         playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
-		//if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
-		//	LoadPlayer();
-		//} else {
-		//	LoadNewPlayer();
-		//}
 
-        LoadNewPlayer();
-	}
+        if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
+            LoadPlayer();
+        } else {
+            LoadNewPlayer();
+        }
+    }
 
 	void Start() {
         bResetWorld = false;
@@ -126,6 +142,8 @@ public class PlayerController : MonoBehaviour {
         uiInventory.SetInventory(inventory);
 
         go_UI_Inventory.SetActive(true);
+
+        whenBossDefeated.FlstartTime = Time.time;
     }
 
     void Update() {
@@ -152,6 +170,9 @@ public class PlayerController : MonoBehaviour {
 
         iFuelAmmount = blackboard.iFuelCount; // constantly update the ammount of fuel the player has
         fPlayerMaxHealth = blackboard.fPlayerMaxHealth;
+        
+
+
     }
 
     private void UseItem(Items item) {
@@ -241,6 +262,9 @@ public class PlayerController : MonoBehaviour {
             if (IsGrounded()) {
                 playerAnimator.SetBool("Running", true);
                 playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
+
+                //
+
             } else { 
                 playerRigidbody2D.velocity += new Vector2(-fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
                 playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
@@ -253,6 +277,9 @@ public class PlayerController : MonoBehaviour {
             if (IsGrounded()) {
                 playerAnimator.SetBool("Running", true);
                 playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
+
+                //
+
             } else {
                 playerAnimator.SetBool("Running", false);
                 playerRigidbody2D.velocity += new Vector2(+fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
@@ -265,6 +292,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
     }
+    
 
     /// <summary>
     /// Function that lets the player climb a ladder
@@ -294,7 +322,7 @@ public class PlayerController : MonoBehaviour {
         if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && blackboard.fCurrentStamina >= 10) {
             playerAnimator.SetBool("bJumping", true);
             playerUI.UseStamina(10);
-            float fJumpVelocity = 13f;
+            float fJumpVelocity = 8f;
             playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
         } else {
             playerAnimator.SetBool("bJumping", false);
@@ -326,19 +354,19 @@ public class PlayerController : MonoBehaviour {
     /// Uses a bool to know which direction the player is facing and than adds a 1.5f to their position so they can dash
     /// </summary>
     private void PlayerDash() {
-        RaycastHit2D blockedInfoRight = Physics2D.Raycast(transform.position, Vector2.right, 7.1f, blockLayerMask); 
-        RaycastHit2D blockedInfoLeft = Physics2D.Raycast(transform.position, Vector2.left, 7.1f, blockLayerMask); 
+        RaycastHit2D blockedInfoRight = Physics2D.Raycast(transform.position, Vector2.right, 1.0f, blockLayerMask); 
+        RaycastHit2D blockedInfoLeft = Physics2D.Raycast(transform.position, Vector2.left, 1.0f, blockLayerMask); 
 
 
         if (bDashIsReady) {
-            if (Input.GetKeyDown(KeyCode.V) && bFacingRight == true && blackboard.fCurrentStamina >= 15 && blockedInfoRight.collider == null) {
+            if (Input.GetKeyDown(KeyCode.V) && bFacingRight == true && blackboard.fCurrentStamina >= 15 && blockedInfoRight.collider == null && bIsCrouching == false) {
                 playerUI.UseStamina(15);
                 playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x + 7.0f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
                 bCanPlayerMove = false;
                 StartCoroutine("WaitForDash");
                 StartCoroutine("WaitForPlayerMoveAfterDash");
-            } else if(Input.GetKeyDown(KeyCode.V) && bFacingRight == false && blackboard.fCurrentStamina >= 15 && blockedInfoLeft.collider == null) {
+            } else if(Input.GetKeyDown(KeyCode.V) && bFacingRight == false && blackboard.fCurrentStamina >= 15 && blockedInfoLeft.collider == null && bIsCrouching == false) {
                 playerUI.UseStamina(15);
                 playerRigidbody2D.position = new Vector2(playerRigidbody2D.position.x - 7.0f, playerRigidbody2D.position.y);
                 bDashIsReady = false;
@@ -411,16 +439,22 @@ public class PlayerController : MonoBehaviour {
     public void SavePlayer() {
         SaveSystem.SavePlayer(this); // saves the current settings and position of the player
         blackboard.fPlayerHealth = blackboard.fPlayerMaxHealth;
-        bResetWorld = true;
+
+
         GameObject[] fuel = GameObject.FindGameObjectsWithTag("Fuel");
         for(int i = 0; i < fuel.Length; i++) {
             Destroy(fuel[i]);
 		}
 
         StartCoroutine("WaitForSave");
+        
     }
 
     public IEnumerator WaitForSave() {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        for (int i = 0; i < enemies.Length; i++) {
+            enemies[i].SetActive(false);
+        }
         playerSaveCanvas.transform.GetChild(1).gameObject.SetActive(false);
         playerSaveCanvas.transform.GetChild(0).gameObject.SetActive(true);
         bCanPlayerMove = false;
@@ -428,6 +462,10 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(4.0f);
         FadeFromBlack();
         playerSaveCanvas.transform.GetChild(1).gameObject.SetActive(true);
+        for (int i = 0; i < enemies.Length; i++) {
+            enemies[i].SetActive(true);
+        }
+        bResetWorld = true;
     }
 
     void FadeToBlack() {
@@ -463,6 +501,8 @@ public class PlayerController : MonoBehaviour {
         blackboard.fPlayerHealth = blackboard.fPlayerMaxHealth; // set the players health to the maximum health value
         itemList = data.itemList;
 
+        //go_CurrentWeapon = data.go_CurrentWeapon;
+
         mainCamera.transform.position = new Vector3(data.afCameraPositions[0], data.afCameraPositions[1], data.afCameraPositions[2]);
     }
 
@@ -492,11 +532,48 @@ public class PlayerController : MonoBehaviour {
         mainCamera.transform.position = new Vector3(-23.0f, 0.5f, -10.0f);
     }
 
+    public void DeleteFiles() {
+		if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
+
+			File.Delete(Application.persistentDataPath + "/player.sdat");
+		}
+
+        if (File.Exists(Application.persistentDataPath + "/smg.sdat")) {
+
+            File.Delete(Application.persistentDataPath + "/smg.sdat");
+        }
+
+        if (File.Exists(Application.persistentDataPath + "/smg.sdat")) {
+
+            File.Delete(Application.persistentDataPath + "/shotgun.sdat");
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.tag == "Fuel") {
             blackboard.iFuelCount = blackboard.iFuelCount + go_FuelPrefab.GetComponent<Fuel>().iFuelDropAmmount;
             Destroy(collision.gameObject);
         }
+
+        /// <summary>
+        /// Jack Created 
+        /// </summary>
+
+        // If the player collides with tag "InstantDeath"
+        if (collision.gameObject.tag == "InstantDeath") {
+
+            // Set the player health to 0
+            blackboard.fPlayerHealth = 0;
+        }
+
+        /// <summary>
+        /// End of Jacks work
+        /// </summary>
+
+
+
+
+
     }
 
 	private void OnTriggerEnter2D(Collider2D collision) {
@@ -521,9 +598,26 @@ public class PlayerController : MonoBehaviour {
         if (collision.gameObject.tag == "Ladder") {
             ClimbLadder();
         }
+
+        /// <summary>
+        /// Jack Created 
+        /// </summary>
+        
+        // If the player collides with snow and is pressing A or D
+        if (collision.gameObject.tag == "Snow" && (Input.GetKey(KeyCode.D) || (Input.GetKey(KeyCode.A)))) {
+
+            // Sound manager, play snow audio
+            soundManager.PlaySnowAudio();
+
+        }
+
+        /// <summary>
+        /// End of Jacks work
+        /// </summary>
+
     }
 
-	private void OnTriggerStay2D(Collider2D collision) {
+    private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.tag == "Weapon" && Input.GetKeyDown(KeyCode.F)) {
             Debug.Log("Weapon");
             go_WeaponManger.GetComponent<WeaponManager>().PickUpWeapon(collision.gameObject);
@@ -538,12 +632,7 @@ public class PlayerController : MonoBehaviour {
         if(collision.gameObject.tag == "Ladder") {
             ClimbLadder();
 		}
-
-        if(collision.gameObject.tag == "Snow") {
-			if (SnowCrunching.isPlaying == false) {
-                SnowCrunching.Play();
-			}
-		}
+        
 
     }
 

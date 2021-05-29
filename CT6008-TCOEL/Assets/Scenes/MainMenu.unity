@@ -445,6 +445,7 @@ GameObject:
   - component: {fileID: 876917726}
   - component: {fileID: 876917725}
   - component: {fileID: 876917724}
+  - component: {fileID: 876917727}
   m_Layer: 5
   m_Name: Exit
   m_TagString: Untagged
@@ -511,16 +512,16 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 186655492}
+  m_TargetGraphic: {fileID: 876917725}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 876917722}
-        m_MethodName: 
+      - m_Target: {fileID: 876917727}
+        m_MethodName: QuitTheGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -563,6 +564,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 876917722}
   m_CullTransparentMesh: 0
+--- !u!114 &876917727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876917722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c0b522248bf1ba4ea1d983288ea6a17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1050451189
 GameObject:
   m_ObjectHideFlags: 0

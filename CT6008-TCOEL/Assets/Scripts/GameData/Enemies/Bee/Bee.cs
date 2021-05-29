@@ -4,7 +4,7 @@
 // Date Created:         <08/05/2021>
 // Brief:                <The script for the bee enemy that is inherited from enemy>
 // Last Edited By:       <Morgan Ellis
-// Last Edited Date:     <17/05/2021>
+// Last Edited Date:     <29/05/2021>
 // Last Edit Brief:      <Updating Comments on the code>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,10 +29,10 @@ public class Bee : Enemy
 		fLastHealth = fEnemyHealth;
 		fEnemyHealth = 300;
         fEnemyMaxHealth = 300;
-        fPatrolRaycastDistance = 4f;
+        fPatrolRaycastDistance = 4.0f;
         fPatrolSpeedOfEnemy = 2f;
         bPatrolRight = true;
-        fLoSRaycastDistance = 2f;
+        fLoSRaycastDistance = 1.0f;
         tPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
 		fSpeedOfEnemy = 4f;
 		bAttackEnemy = true;
@@ -80,7 +80,7 @@ public class Bee : Enemy
 	}
 
 	new public void Patrol() {
-		if (transform.position.y < fBeePatrolHeight) {
+		if (transform.position.y < fBeePatrolHeight && bAttackEnemy == false) {
 			transform.Translate(Vector2.up * fSpeedOfEnemy * Time.deltaTime);
 			transform.Translate(Vector2.left * fSpeedOfEnemy * Time.deltaTime);
 		}

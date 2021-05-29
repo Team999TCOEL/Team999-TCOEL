@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2025749780985289903}
   m_Layer: 0
   m_Name: Buckshot
-  m_TagString: Untagged
+  m_TagString: Buckshot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

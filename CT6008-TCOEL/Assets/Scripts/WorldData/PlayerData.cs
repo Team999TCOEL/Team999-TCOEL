@@ -14,6 +14,8 @@ public class PlayerData
 
 	public float[] afCameraPositions;
 
+	//public GameObject go_CurrentWeapon;
+
 	public PlayerData(PlayerController playerController) {
 		afPlayerPositions = new float[2];
 		afPlayerPositions[0] = playerController.transform.position.x;
@@ -23,6 +25,8 @@ public class PlayerData
 		iHealAmmount = playerController.iHealAmmount;
 		fMaxStamina = playerController.fMaxStamina;
 		itemList = playerController.itemList;
+
+		//go_CurrentWeapon = playerController.go_CurrentWeapon;
 
 		afCameraPositions = new float[3];
 		afCameraPositions[0] = playerController.mainCamera.transform.position.x;

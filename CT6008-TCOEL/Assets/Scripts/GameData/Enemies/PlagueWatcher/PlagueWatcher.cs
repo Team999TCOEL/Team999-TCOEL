@@ -56,6 +56,13 @@ public class PlagueWatcher : MonoBehaviour
 
     public Animator plagueWatcherAnimator;
 
+
+    /// <summary>
+    /// UI Elements
+    /// </summary> 
+    public GameObject go_GameOverScreen;
+
+
     void Start()
     {
         bLaserReady = false;
@@ -74,6 +81,9 @@ public class PlagueWatcher : MonoBehaviour
         fMaxSpeed = 2f;
         fAccelerationTime = 60f;
         fTime = 0;
+
+        // Set the game over screen to false
+        go_GameOverScreen.SetActive(false);
     }
 
     void Update()
@@ -124,7 +134,7 @@ public class PlagueWatcher : MonoBehaviour
                     bGroundAttack = false;
                 }
                 if (bLaserReady == true) {
-                    if (endLaserTransform.position != new Vector3(183, -0.75f, -107) && bLaserReady == true) {
+                    if (endLaserTransform.position != new Vector3(233.0f, -0.75f, 0) && bLaserReady == true) {
                         ShootLaser();
                     } else {
                         endLaserTransform.position = v3_StartPosition;
@@ -137,6 +147,10 @@ public class PlagueWatcher : MonoBehaviour
                 CloseDoor.SetActive(false);
                 backGroundMusic.Play();
                 Destroy(gameObject);
+
+                // Make Game over screen visible
+                go_GameOverScreen.SetActive(true);
+
             }
         }
     }
@@ -149,11 +163,11 @@ public class PlagueWatcher : MonoBehaviour
 
         if (i < 3) {
 
-            if (Physics2D.Raycast(endLaserTransform.position, Vector2.left, 0.1f, playerLayerMask) || Physics2D.Raycast(endLaserTransform.position, (Vector2.up + Vector2.right + Vector2.right + Vector2.right), 4f, playerLayerMask)) {
+            if (Physics2D.Raycast(endLaserTransform.position, Vector2.left, 0.1f, playerLayerMask) || Physics2D.Raycast(endLaserTransform.position, (Vector2.up + Vector2.right + Vector2.right + Vector2.right), 10f, playerLayerMask)) {
                 StartCoroutine("WaitForLaserRecharge");
             }
             fCurrentSpeed = Mathf.SmoothStep(fMinSpeed, fMaxSpeed, fTime / fAccelerationTime);
-            endLaserTransform.position = Vector3.MoveTowards(endLaserTransform.position, new Vector3(221.735f, -0.75f, -107), fCurrentSpeed);
+            endLaserTransform.position = Vector3.MoveTowards(endLaserTransform.position, new Vector3(233.0f, -0.75f, 0), fCurrentSpeed);
             fTime += Time.deltaTime;
 
             //endLaserTransform.position = Vector3.Lerp(v3_StartPosition, new Vector3(183, -0.75f, -107), 1.25f * Time.deltaTime);
@@ -173,7 +187,7 @@ public class PlagueWatcher : MonoBehaviour
         bLaserReady = false;
         LaserLineRenderer.enabled = false;
         endLaserTransform.position = v3_StartPosition;
-        yield return new WaitForSeconds(11f);
+        yield return new WaitForSeconds(7f);
         i = 0;
         bChooseAnAttack = true;
 
@@ -189,10 +203,9 @@ public class PlagueWatcher : MonoBehaviour
         LaserLineRenderer.enabled = false;
         blackboard.fPlayerHealth -= 1;
         endLaserTransform.position = v3_StartPosition;
-        yield return new WaitForSeconds(15f);
+        yield return new WaitForSeconds(9f);
         i = 0;
         bChooseAnAttack = true;
-        
     }
 
     private void Draw2DRay(Vector2 startPos, Vector2 endPos) {
@@ -227,7 +240,7 @@ public class PlagueWatcher : MonoBehaviour
     }
 
     IEnumerator GroundAttackRecharge() {
-        yield return new WaitForSeconds(9f);
+        yield return new WaitForSeconds(6f);
         bGroundAttack = false;
         bChooseAnAttack = true;
         plagueWatcherAnimator.SetBool("bSlamAttack", false);
