@@ -56,6 +56,13 @@ public class PlagueWatcher : MonoBehaviour
 
     public Animator plagueWatcherAnimator;
 
+
+    /// <summary>
+    /// UI Elements
+    /// </summary> 
+    public GameObject go_GameOverScreen;
+
+
     void Start()
     {
         bLaserReady = false;
@@ -74,6 +81,9 @@ public class PlagueWatcher : MonoBehaviour
         fMaxSpeed = 2f;
         fAccelerationTime = 60f;
         fTime = 0;
+
+        // Set the game over screen to false
+        go_GameOverScreen.SetActive(false);
     }
 
     void Update()
@@ -137,6 +147,10 @@ public class PlagueWatcher : MonoBehaviour
                 CloseDoor.SetActive(false);
                 backGroundMusic.Play();
                 Destroy(gameObject);
+
+                // Make Game over screen visible
+                go_GameOverScreen.SetActive(true);
+
             }
         }
     }

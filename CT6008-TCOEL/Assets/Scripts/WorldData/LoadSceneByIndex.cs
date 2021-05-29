@@ -11,4 +11,11 @@ public class LoadSceneByIndex : MonoBehaviour
     public void LoadByIndex(int sceneIndex) {
         SceneManager.LoadScene(sceneIndex);
     }
+
+    /// <summary>
+    /// Quits the application when the button is pressed
+    /// </summary>
+    public void QuitTheGame() {
+        Application.Quit();
+    }
 }

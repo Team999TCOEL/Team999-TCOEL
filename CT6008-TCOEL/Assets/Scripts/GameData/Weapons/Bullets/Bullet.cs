@@ -52,5 +52,17 @@ public class Bullet : MonoBehaviour
             collision.GetComponent<PlagueWatcher>().fEnemyHealth -= smg.fDamage;
 
         }
+
+
+        // If the bullet collides with a blocker then destroy the bullet
+        if (collision.gameObject.tag == "EnemyBlocker") {
+            Destroy(gameObject);
+        }
+
+        
+
     }
+
+    
+
 }

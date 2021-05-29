@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////
 // File:                 <PlayerController.cs>
-// Author:               <Morgan Ellis>
+// Author:               <Morgan Ellis & Jack Peedle>
 // Date Created:         <30/01/2021>
 // Brief:                <File responsible for the movements of the player such as jumping>
 // Last Edited By:       <Morgan Ellis
@@ -86,22 +86,43 @@ public class PlayerController : MonoBehaviour {
 
     public AudioSource InjuredGaspSound;
 
-    public AudioSource SnowCrunching;
+    //public AudioSource SnowCrunching;
 
     [SerializeField] public bool bBossFightCameraActive;
 
     private bool bIsCrouching;
 
+    /// <summary>
+    /// Jack Created 
+    /// </summary>
+     
+    // Reference to the sound manager
+    public SoundManager soundManager;
+
+    // Reference to the boss defeated script
+    public WhenBossDefeated whenBossDefeated;
+
+    /// <summary>
+    /// End of Jacks work
+    /// </summary>
+
+    
+
     private void Awake() {
         playerSaveCanvas.gameObject.SetActive(false); // disables the players save canvas
-		//if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
-		//	LoadPlayer();
-		//} else {
-		//	LoadNewPlayer();
-		//}
 
-        LoadNewPlayer();
-	}
+
+        if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
+            LoadPlayer();
+        } else {
+            LoadNewPlayer();
+        }
+
+        //if (File.Exists(Application.persistentDataPath + "/player.sdat")) {
+
+        //    File.Delete(Application.persistentDataPath + "/player");
+        //}
+    }
 
 	void Start() {
         bResetWorld = false;
@@ -126,6 +147,8 @@ public class PlayerController : MonoBehaviour {
         uiInventory.SetInventory(inventory);
 
         go_UI_Inventory.SetActive(true);
+
+        whenBossDefeated.FlstartTime = Time.time;
     }
 
     void Update() {
@@ -152,6 +175,9 @@ public class PlayerController : MonoBehaviour {
 
         iFuelAmmount = blackboard.iFuelCount; // constantly update the ammount of fuel the player has
         fPlayerMaxHealth = blackboard.fPlayerMaxHealth;
+        
+
+
     }
 
     private void UseItem(Items item) {
@@ -241,6 +267,9 @@ public class PlayerController : MonoBehaviour {
             if (IsGrounded()) {
                 playerAnimator.SetBool("Running", true);
                 playerRigidbody2D.velocity = new Vector2(-fMoveSpeed, playerRigidbody2D.velocity.y);
+
+                //
+
             } else { 
                 playerRigidbody2D.velocity += new Vector2(-fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
                 playerRigidbody2D.velocity = new Vector2(Mathf.Clamp(playerRigidbody2D.velocity.x, -fMoveSpeed, +fMoveSpeed), playerRigidbody2D.velocity.y);
@@ -253,6 +282,9 @@ public class PlayerController : MonoBehaviour {
             if (IsGrounded()) {
                 playerAnimator.SetBool("Running", true);
                 playerRigidbody2D.velocity = new Vector2(+fMoveSpeed, playerRigidbody2D.velocity.y);
+
+                //
+
             } else {
                 playerAnimator.SetBool("Running", false);
                 playerRigidbody2D.velocity += new Vector2(+fMoveSpeed * fMidAirControl * Time.deltaTime, 0);
@@ -265,6 +297,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
     }
+    
 
     /// <summary>
     /// Function that lets the player climb a ladder
@@ -294,7 +327,7 @@ public class PlayerController : MonoBehaviour {
         if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && blackboard.fCurrentStamina >= 10) {
             playerAnimator.SetBool("bJumping", true);
             playerUI.UseStamina(10);
-            float fJumpVelocity = 13f;
+            float fJumpVelocity = 8f;
             playerRigidbody2D.velocity = Vector2.up * fJumpVelocity;
         } else {
             playerAnimator.SetBool("bJumping", false);
@@ -497,6 +530,26 @@ public class PlayerController : MonoBehaviour {
             blackboard.iFuelCount = blackboard.iFuelCount + go_FuelPrefab.GetComponent<Fuel>().iFuelDropAmmount;
             Destroy(collision.gameObject);
         }
+
+        /// <summary>
+        /// Jack Created 
+        /// </summary>
+
+        // If the player collides with tag "InstantDeath"
+        if (collision.gameObject.tag == "InstantDeath") {
+
+            // Set the player health to 0
+            blackboard.fPlayerHealth = 0;
+        }
+
+        /// <summary>
+        /// End of Jacks work
+        /// </summary>
+
+
+
+
+
     }
 
 	private void OnTriggerEnter2D(Collider2D collision) {
@@ -521,9 +574,26 @@ public class PlayerController : MonoBehaviour {
         if (collision.gameObject.tag == "Ladder") {
             ClimbLadder();
         }
+
+        /// <summary>
+        /// Jack Created 
+        /// </summary>
+        
+        // If the player collides with snow and is pressing A or D
+        if (collision.gameObject.tag == "Snow" && (Input.GetKey(KeyCode.D) || (Input.GetKey(KeyCode.A)))) {
+
+            // Sound manager, play snow audio
+            soundManager.PlaySnowAudio();
+
+        }
+
+        /// <summary>
+        /// End of Jacks work
+        /// </summary>
+
     }
 
-	private void OnTriggerStay2D(Collider2D collision) {
+    private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.tag == "Weapon" && Input.GetKeyDown(KeyCode.F)) {
             Debug.Log("Weapon");
             go_WeaponManger.GetComponent<WeaponManager>().PickUpWeapon(collision.gameObject);
@@ -538,12 +608,7 @@ public class PlayerController : MonoBehaviour {
         if(collision.gameObject.tag == "Ladder") {
             ClimbLadder();
 		}
-
-        if(collision.gameObject.tag == "Snow") {
-			if (SnowCrunching.isPlaying == false) {
-                SnowCrunching.Play();
-			}
-		}
+        
 
     }
 
